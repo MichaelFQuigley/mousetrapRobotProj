@@ -1,6 +1,7 @@
 #Author: Michael Quigley
 #NOTE: tkinter requires Python 3
 from tkinter import *
+from pathFinder import *
 
 class PathFinderUI:
 
@@ -13,13 +14,47 @@ class PathFinderUI:
         self.fHeight  = 500
         self.canvas   = Canvas(self.tk, width=self.fWidth, height=self.fHeight, borderwidth=5, background='white')
         self.sbmtBtn  = Button(self.tk, text="Submit", command=self.submit)
+        self.rstBtn  = Button(self.tk, text="Reset", command=self.reset)
         self.tk.wm_title("Path Finder Test UI")
         self.canvas.pack()
         self.sbmtBtn.pack()
+        self.rstBtn.pack()
         self.canvas.bind('<Button-1>', self.clickCallback)
+        self.lastPath = []
+     
+    def resetPath(self):
+        if len(self.lastPath) > 0:
+            col_width  = self.canvas.winfo_width()/self.cols_num
+            row_height = self.canvas.winfo_height()/self.rows_num
+            for cell in path:
+                row_ind = cell[1]
+                col_ind = cell[0]
+                self.tiles[row_ind][col_ind] = self.canvas.create_rectangle(col_ind*col_width, row_ind*row_height, (col_ind + 1)*col_width, (row_ind + 1)*row_height, fill="red")
+        self.lastPath = []
+        
+    def drawPath(self, path):
+        self.lastPath = path
+        col_width  = self.canvas.winfo_width()/self.cols_num
+        row_height = self.canvas.winfo_height()/self.rows_num
+        for cell in path:
+            row_ind = cell[1]
+            col_ind = cell[0]
+            self.tiles[row_ind][col_ind] = self.canvas.create_rectangle(col_ind*col_width, row_ind*row_height, (col_ind + 1)*col_width, (row_ind + 1)*row_height, fill="red")
+      
+    def reset(self):
+        for row_ind in range(self.rows_num):
+            for col_ind in range(self.cols_num):
+                if self.tiles[row_ind][col_ind]:
+                    self.canvas.delete(self.tiles[row_ind][col_ind])
+                    self.tiles[row_ind][col_ind] = None
 
+      
     def submit(self):
-        self.gridPrettyPrint()
+        pathFinder = PathFinder(self.getGrid())
+        shortestPathLen, shortestPath = pathFinder.getShortestPath((0,0), (self.cols_num - 1, self.rows_num - 1))
+        self.drawPath(shortestPath)
+        #self.gridPrettyPrint()
+       # pathFinder.prettyPrintNodesTraversed()
         
     #tile layout taken from http://stackoverflow.com/questions/26988204/using-2d-array-to-create-clickable-tkinter-canvas
     def clickCallback(self, event):
