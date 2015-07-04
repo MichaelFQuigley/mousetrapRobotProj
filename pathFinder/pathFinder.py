@@ -3,6 +3,7 @@
 
 #assumes that the origin is at the top left        
 from copy import copy, deepcopy
+from math import sqrt
 
 class PathFinder:
     def __init__(self, grid):
@@ -52,6 +53,12 @@ class PathFinder:
         
         
 
+    def getWeight(self, currPos, neighborPos):
+        if currPos[0] != neighborPos[0] and currPos[1] != neighborPos[1]:
+        	return sqrt(2)
+        return 1
+        
+
     def prettyPrintNodesTraversed(self):
         [print(self.nodesTraversed[j])
             for j in range(len(self.nodesTraversed))]
@@ -72,7 +79,7 @@ class PathFinder:
             else:
                 continue
                 
-            tempMin, pathPart = self.getShortestPath(neighbor, endPos, currPathLen + 1)
+            tempMin, pathPart = self.getShortestPath(neighbor, endPos, currPathLen + self.getWeight(currPos, neighbor))
             if tempMin < currMin:
                 currMin = tempMin
                 currPathPart = pathPart
