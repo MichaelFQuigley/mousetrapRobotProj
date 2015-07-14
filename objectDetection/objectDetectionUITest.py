@@ -10,7 +10,7 @@ def scrollBarCallback(pos):
 	pass
 
 windowName = 'testWin'
-img        = cv2.resize(cv2.imread('mousetraps.jpg',cv2.IMREAD_COLOR), (0,0), fx=0.5, fy=0.75)
+img        = cv2.resize(cv2.imread('../img/mousetraps.jpg',cv2.IMREAD_COLOR), (0,0), fx=0.5, fy=0.75)
 cv2.namedWindow(windowName, cv2.WINDOW_NORMAL)
 
 # create trackbars for color change
