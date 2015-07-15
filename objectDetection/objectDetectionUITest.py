@@ -16,7 +16,7 @@ def scrollBarCallback(pos):
 
 windowName = 'testWin'
 img        = cv2.resize(cv2.imread('../img/mousetraps.jpg',cv2.IMREAD_COLOR), (0,0), fx=0.5, fy=0.5)
-cv2.namedWindow(windowName)#, cv2.WINDOW_AUTOSIZE)
+cv2.namedWindow(windowName, cv2.WINDOW_NORMAL)
 #cv2.imwrite("picToCalibrate.png", img)
 # create trackbars for color change
 cv2.createTrackbar('Rmin',windowName, 0, 255, scrollBarCallback)
