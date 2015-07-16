@@ -9,6 +9,8 @@
           <option value="experiment.experiment.Video" />
           <option value="experiment.experiment.Example" />
           <option value="experiment.sliders.Sliders" />
+          <option value="ui.UiMain.RobotUI" />
+          <option value="ui.ImageWidget.ImageWidget" />
         </list>
       </option>
     </inspection_tool>

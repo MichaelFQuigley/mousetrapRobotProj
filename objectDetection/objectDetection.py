@@ -2,11 +2,11 @@ import cv2
 import numpy as np
 
 
-def postProcess(img):
+def postProcess(img, dilation, erosion):
     # erosion
-    kernel = np.ones((20, 20), np.uint8)
+    kernel = np.ones(erosion, np.uint8)
     erodedImg = cv2.erode(img, kernel, iterations=1)
-    kernel2 = np.ones((10, 10), np.uint8)
+    kernel2 = np.ones(dilation, np.uint8)
     dilatedImg = cv2.dilate(erodedImg, kernel2, iterations=1)
     return dilatedImg
 
