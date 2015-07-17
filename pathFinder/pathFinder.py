@@ -12,7 +12,7 @@ class PathFinder:
         #a value of True in a cell indicates that the cell is blocked and cannot be traveled to
         self.grid           = grid
         #-1 indicates the node cant be traversed
-        self.nodesTraversed = [[-1.0 if grid[j][i] == True else float("inf")
+        self.nodesTraversed = [[-1.0 if grid[j][i] == 1 else float("inf")
                                     for i in range(len(grid[j]))] 
                                         for j in range(len(grid))]
     
@@ -60,8 +60,9 @@ class PathFinder:
         
 
     def prettyPrintNodesTraversed(self):
-        [print(self.nodesTraversed[j])
-            for j in range(len(self.nodesTraversed))]
+        for j in range(len(self.nodesTraversed)):
+            print(self.nodesTraversed[j])
+
         
         
         

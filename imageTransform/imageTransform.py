@@ -65,3 +65,8 @@ def four_point_transform(image, pts):
 
     # return the warped image
     return warped
+
+
+def bitmap_from_image(image):
+    thresh = 127
+    return cv2.threshold(image, thresh, True, cv2.THRESH_BINARY)[1]

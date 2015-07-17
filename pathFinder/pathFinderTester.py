@@ -1,6 +1,8 @@
 #Author: Michael Quigley
 #NOTE: tkinter requires Python 3
-from tkinter import *
+import sys
+from PyQt4 import QtGui
+from Tkinter import *
 from pathFinder import *
 
 class PathFinderUI:
@@ -74,9 +76,11 @@ class PathFinderUI:
      
     def gridPrettyPrint(self):
         print("Grid:")
-        [print([(0 if self.tiles[j][i] != None else 1) 
-        for i in range(self.cols_num)]) 
-        for j in range(self.rows_num)]
+        for i in range(self.rows_num):
+            for j in range(self.cols_num):
+                print(self.tiles[i][j])
+
+
 
 pt = PathFinderUI(100, 100)
 pt.tk.mainloop()
