@@ -5,6 +5,34 @@
 from copy import copy, deepcopy
 from math import sqrt
 
+class NodeStack:
+    def __init__(self):
+        self.nodesList = []
+    
+    def printStack(self):
+        print(self.nodesList)
+    
+    def empty(self):
+        return len(self.nodesList) == 0
+    
+    def peek(self):
+        if len(self.nodesList) > 0:
+            return self.nodesList[len(self.nodesList) - 1]
+        else:
+            return []
+            
+    def push(self,element):
+        self.nodesList = [element] + self.nodesList
+        
+    def pop(self):
+        if len(self.nodesList) > 0:
+            result = self.nodesList[len(self.nodesList) - 1]
+            self.nodesList = self.nodesList[0:len(self.nodesList) - 1]
+            return result
+        else:
+            return []
+    
+
 class PathFinder:
     def __init__(self, grid):
         #grid is 2D array of Booleans
@@ -55,7 +83,7 @@ class PathFinder:
 
     def getWeight(self, currPos, neighborPos):
         if currPos[0] != neighborPos[0] and currPos[1] != neighborPos[1]:
-        	return sqrt(2)
+            return sqrt(2)
         return 1
         
 
@@ -74,9 +102,9 @@ class PathFinder:
         currMin = float("inf")
         currPathPart = []
         for neighbor in self.getNeighbors(currPos):
-            nodeMinPathLen = self.nodesTraversed[neighbor[1]][neighbor[0]]
+            nodeMinPathLen = self.getDist(neighbor)
             if currPathLen < nodeMinPathLen:
-                self.nodesTraversed[neighbor[1]][neighbor[0]] = currPathLen
+                self.setDist(neighbor, currPathLen)
             else:
                 continue
                 
@@ -86,6 +114,49 @@ class PathFinder:
                 currPathPart = pathPart
         currPathPart.append(currPos)
         return (currMin, currPathPart)
+        
+    def getDist(self, node):
+        return self.nodesTraversed[node[1]][node[0]]
+        
+    def setDist(self, node, value):
+        self.nodesTraversed[node[1]][node[0]] = value
+        
+    def weightGraphIterative(self, startPos, endPos):
+        nodeStack    = NodeStack()
+        self.setDist(startPos, 0)
+        nodeStack.push(startPos)
+        currPos = startPos
+        while not nodeStack.empty() and currPos != endPos:
+            currPos = nodeStack.pop()
+            for neighbor in self.getNeighbors(currPos):
+                if neighbor not in nodeStack.nodesList and self.getDist(neighbor) != -1:
+                    nodeStack.push(neighbor)
+                weight = self.getWeight(currPos, neighbor) + self.getDist(currPos)
+                if weight < self.getDist(neighbor) and self.getDist(neighbor) != -1:
+                    self.setDist(neighbor, weight)
+            
+       
+    def getShortestPathIterative(self, startPos, endPos):
+        self.weightGraphIterative(startPos, endPos)
+        traveled = [endPos]
+        currPath = [endPos]
+        
+        currPos = endPos
+        while currPos != startPos:
+            currMin      = float('inf')
+            bestNeighbor = None
+            for neighbor in self.getNeighbors(currPos):
+                if neighbor in traveled:
+                    continue
+                traveled.append(neighbor)
+                if self.getDist(neighbor) < currMin and self.getDist(neighbor) != -1:
+                    currMin = self.getDist(neighbor)
+                    bestNeighbor = neighbor
+            if bestNeighbor != None:
+                currPos = bestNeighbor
+                currPath.append(bestNeighbor)
+        print(currPath)
+        return 0, currPath
         
 
         

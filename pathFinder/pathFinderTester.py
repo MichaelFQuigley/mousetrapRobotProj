@@ -1,7 +1,7 @@
 #Author: Michael Quigley
 #NOTE: tkinter requires Python 3
 import sys
-from PyQt4 import QtGui
+#from PyQt4 import QtGui
 from Tkinter import *
 from pathFinder import *
 
@@ -53,7 +53,7 @@ class PathFinderUI:
       
     def submit(self):
         pathFinder = PathFinder(self.getGrid())
-        shortestPathLen, shortestPath = pathFinder.getShortestPath((0,0), (self.cols_num - 1, self.rows_num - 1))
+        shortestPathLen, shortestPath = pathFinder.getShortestPathIterative((0,0), (self.cols_num - 1, self.rows_num - 1))
         self.drawPath(shortestPath)
         #self.gridPrettyPrint()
        # pathFinder.prettyPrintNodesTraversed()
