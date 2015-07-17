@@ -78,5 +78,5 @@ class PathFinderUI:
         for i in range(self.cols_num)]) 
         for j in range(self.rows_num)]
 
-pt = PathFinderUI(15, 15)
+pt = PathFinderUI(100, 100)
 pt.tk.mainloop()
