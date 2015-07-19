@@ -20,7 +20,7 @@ class Loop(QtCore.QObject):
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     cameras.init()
-    cameras.VideoCapture()
+    cameras.VideoCapture(0)
     main = ui.MainWindow()
     thread = QtCore.QThread()
     work = Loop()
