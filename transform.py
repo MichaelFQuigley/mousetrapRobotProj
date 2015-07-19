@@ -1,8 +1,5 @@
-__author__ = 'zgrogan'
-# import the necessary packages
 import numpy as np
 import cv2
-
 
 def order_points(pts):
     # initialzie a list of coordinates that will be ordered
@@ -68,5 +65,4 @@ def four_point_transform(image, pts):
 
 
 def bitmap_from_image(image):
-    thresh = 127
-    return cv2.threshold(image, thresh, True, cv2.THRESH_BINARY)[1]
+    return cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)[1]
