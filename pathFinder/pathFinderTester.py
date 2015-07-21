@@ -3,8 +3,10 @@
 import sys
 #from PyQt4 import QtGui
 from Tkinter import *
-from pathFinder import *
+from pathFinderDijkstra import *
 import time
+
+import path
 
 class PathFinderUI:
 
@@ -54,7 +56,7 @@ class PathFinderUI:
 
       
     def submit(self):
-        pathFinder = PathFinder(self.getGrid())
+        pathFinder = PathFinderDijkstra(self.getGrid())
         startTime = time.time()
         shortestPathLen, shortestPath = pathFinder.getShortestPathIterative((0,0), (self.cols_num - 1, self.rows_num - 1))
         endTime = time.time()
@@ -87,5 +89,5 @@ class PathFinderUI:
 
 
 
-pt = PathFinderUI(100, 100)
+pt = PathFinderUI(50, 50)
 pt.tk.mainloop()
