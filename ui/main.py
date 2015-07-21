@@ -4,12 +4,13 @@ from PIL import ImageQt
 import numpy as np
 import Image
 from functools import partial
+from os import path
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setWindowTitle('Mousetrap Navigator')
-        self.setWindowIcon(QtGui.QIcon('img/mousetrap.png'))
+        self.setWindowIcon(QtGui.QIcon(path.join('img','mousetrap.png')))
 
         self.init_menubar()
         self.init_central_widget()

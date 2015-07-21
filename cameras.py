@@ -11,6 +11,7 @@ def init():
         cap = cv2.VideoCapture(detected)
         if cap.isOpened():
             detected = detected + 1
+        else:
             good = False
         cap.release()
 
