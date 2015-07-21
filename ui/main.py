@@ -2,9 +2,10 @@ import cameras
 from PyQt4 import QtCore, QtGui
 from PIL import ImageQt
 import numpy as np
-import Image
+from PIL import Image
 from functools import partial
 from os import path
+from SlidersWidget import SlidersWidget
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
@@ -40,23 +41,31 @@ class MainWindow(QtGui.QMainWindow):
         widget = QtGui.QWidget()
         self.setCentralWidget(widget)
 
-        hbox = QtGui.QHBoxLayout()
-        hbox.addStretch(1)
-
-        self.raw = QtGui.QLabel()
-        hbox.addWidget(self.raw)
-
-        self.processed = QtGui.QLabel()
-        hbox.addWidget(self.processed)
-
         vbox = QtGui.QVBoxLayout()
         vbox.addStretch(1)
-        vbox.addLayout(hbox)
-        widget.setLayout(vbox)
+        slidersWidget = SlidersWidget(self)
+        vbox.addWidget(slidersWidget)
+
+        print(slidersWidget.bMaxSlider.sliderPosition())
+
+        self.raw = QtGui.QLabel()
+        vbox.addWidget(self.raw)
+
+        self.processed = QtGui.QLabel()
+        vbox.addWidget(self.processed)
+
+        rMin = 0
+        rMax = 0
+
+        hbox = QtGui.QHBoxLayout()
+        hbox.addStretch(1)
+        hbox.addLayout(vbox)
+        widget.setLayout(hbox)
 
     def on_image_ready(self, orig, new):
         self.raw.setPixmap(as_pixmap(orig))
         self.processed.setPixmap(as_pixmap(new))
+
 
 def as_pixmap(frame):
     pil_image = Image.fromarray(np.uint8(frame))

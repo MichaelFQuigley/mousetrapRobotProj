@@ -4,16 +4,20 @@ selected = -1
 detected = 0
 cap = None
 
+
 def init():
     global detected
     good = True
-    while good:
-        cap = cv2.VideoCapture(detected)
+    limit = 100;
+    while good & (limit < 100):
+        cap = cv2.VideoCapture()
         if cap.isOpened():
             detected = detected + 1
         else:
             good = False
+        limit += 1
         cap.release()
+
 
 def VideoCapture(ind):
     global cap, selected
