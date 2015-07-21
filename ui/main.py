@@ -46,8 +46,6 @@ class MainWindow(QtGui.QMainWindow):
         slidersWidget = SlidersWidget(self)
         vbox.addWidget(slidersWidget)
 
-        print(slidersWidget.bMaxSlider.sliderPosition())
-
         self.raw = QtGui.QLabel()
         vbox.addWidget(self.raw)
 
@@ -65,7 +63,7 @@ class MainWindow(QtGui.QMainWindow):
     def on_image_ready(self, orig, new):
         self.raw.setPixmap(as_pixmap(orig))
         self.processed.setPixmap(as_pixmap(new))
-
+        print self.processed.pixmap()
 
 def as_pixmap(frame):
     pil_image = Image.fromarray(np.uint8(frame))
