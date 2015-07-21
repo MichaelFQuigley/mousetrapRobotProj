@@ -6,7 +6,17 @@ class PathFinder:
     """
 
     def __init__(self, grid):
-        self.grid = grid
+        """
+        The grid is a boolean array where False locations are blocked.
+        """
+        self._grid = grid
+        self._grid_height = len(grid)
+        self._grid_width = len(grid[0])
         
     def get_path(self, origin, dest):
+        """
+        Returns a tuple, where the first element is the path length,
+        and the second element is the path as a list of cells.
+        Cells are (row, column) tuples.
+        """
         pass
