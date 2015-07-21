@@ -4,10 +4,12 @@
 #assumes that the origin is at the top left        
 from copy import copy, deepcopy
 from math import sqrt
+from collections import deque
 
-class NodeStack:
+class NodeQueue:
     def __init__(self):
-        self.nodesList = []
+        self.nodesList = deque()
+        self.nodesSet  = set()
     
     def printStack(self):
         print(self.nodesList)
@@ -21,16 +23,14 @@ class NodeStack:
         else:
             return []
             
-    def push(self,element):
-        self.nodesList = [element] + self.nodesList
+    def enqueue(self,element):
+        self.nodesSet.add(element)
+        self.nodesList.append(element)
         
-    def pop(self):
-        if len(self.nodesList) > 0:
-            result = self.nodesList[len(self.nodesList) - 1]
-            self.nodesList = self.nodesList[0:len(self.nodesList) - 1]
-            return result
-        else:
-            return []
+    def dequeue(self):
+        result = self.nodesList.popleft()
+        self.nodesSet.remove(result)
+        return result
     
 
 class PathFinder:
@@ -83,7 +83,7 @@ class PathFinder:
 
     def getWeight(self, currPos, neighborPos):
         if currPos[0] != neighborPos[0] and currPos[1] != neighborPos[1]:
-            return sqrt(2)
+            return 1.414 #sqrt(2)
         return 1
         
 
@@ -122,15 +122,15 @@ class PathFinder:
         self.nodesTraversed[node[1]][node[0]] = value
         
     def weightGraphIterative(self, startPos, endPos):
-        nodeStack    = NodeStack()
+        nodeQueue    = NodeQueue()
         self.setDist(startPos, 0)
-        nodeStack.push(startPos)
+        nodeQueue.enqueue(startPos)
         currPos = startPos
-        while not nodeStack.empty() and currPos != endPos:
-            currPos = nodeStack.pop()
+        while not nodeQueue.empty() and currPos != endPos:
+            currPos = nodeQueue.dequeue()
             for neighbor in self.getNeighbors(currPos):
-                if neighbor not in nodeStack.nodesList and self.getDist(neighbor) != -1:
-                    nodeStack.push(neighbor)
+                if neighbor not in nodeQueue.nodesSet and self.getDist(neighbor) != -1:
+                    nodeQueue.enqueue(neighbor)
                 weight = self.getWeight(currPos, neighbor) + self.getDist(currPos)
                 if weight < self.getDist(neighbor) and self.getDist(neighbor) != -1:
                     self.setDist(neighbor, weight)
@@ -156,7 +156,7 @@ class PathFinder:
                 currPos = bestNeighbor
                 currPath.append(bestNeighbor)
         print(currPath)
-        return 0, currPath
+        return self.getDist(endPos), currPath
         
 
         

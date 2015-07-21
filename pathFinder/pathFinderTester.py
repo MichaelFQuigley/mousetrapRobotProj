@@ -4,6 +4,7 @@ import sys
 #from PyQt4 import QtGui
 from Tkinter import *
 from pathFinder import *
+import time
 
 class PathFinderUI:
 
@@ -22,6 +23,7 @@ class PathFinderUI:
         self.sbmtBtn.pack()
         self.rstBtn.pack()
         self.canvas.bind('<Button-1>', self.clickCallback)
+        self.canvas.bind('<B1-Motion>', self.clickCallback)
         self.lastPath = []
      
     def resetPath(self):
@@ -53,7 +55,10 @@ class PathFinderUI:
       
     def submit(self):
         pathFinder = PathFinder(self.getGrid())
+        startTime = time.time()
         shortestPathLen, shortestPath = pathFinder.getShortestPathIterative((0,0), (self.cols_num - 1, self.rows_num - 1))
+        endTime = time.time()
+        print("Time elapsed: " + str(endTime - startTime))
         self.drawPath(shortestPath)
         #self.gridPrettyPrint()
        # pathFinder.prettyPrintNodesTraversed()
