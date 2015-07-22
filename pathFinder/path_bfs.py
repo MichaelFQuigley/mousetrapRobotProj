@@ -15,28 +15,6 @@ class PathFinderBFS(PathFinder):
     """
     def __init__(self, grid):
         PathFinder.__init__(self, grid)
-        
-    def within_bounds(self, row, col):
-        return row >= 0 and row < self._grid_height and col >= 0 and col < self._grid_width
-
-    def is_blocked(self, row, col):
-        return self._grid[row][col]
-    
-    def get_neighbors(self, row, col):
-        """
-        Get 8-adjacent neighbors.
-        Ignores blocked cells.
-        """
-        n = []
-        for r in [-1, 0, 1]:
-            for c in [-1, 0, 1]:
-                if r != 0 or c != 0:
-                    n_row = row + r
-                    n_col = col + c
-                    if self.within_bounds(n_row, n_col):
-                        if not self.is_blocked(n_row, n_col): # ignore blocked cells
-                            n.append((n_row, n_col))
-        return n
 
     def get_path(self, origin, dest):
         """

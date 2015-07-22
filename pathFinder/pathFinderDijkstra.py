@@ -41,48 +41,12 @@ class PathFinderDijkstra(PathFinder):
     def __init__(self, grid):
         PathFinder.__init__(self, grid)
 
-		#-1 indicates the node cant be traversed
-        self.nodesTraversed = [[-1.0 if grid[j][i] == 1 else float("inf")
-                                    for i in range(len(grid[j]))] 
-                                        for j in range(len(grid))]
+	#-1 indicates the node cant be traversed
+        self.nodesTraversed = [[-1.0 if grid[row][col] == 1 else float("inf")
+                                    for col in range(len(grid[row]))] 
+                                        for row in range(len(grid))]
     
     
-    
-    def getNeighbors(self, currPos):
-        adjNodeList = []
-        x = currPos[0]
-        y = currPos[1]
-        top    = y + 1
-        bottom = y - 1
-        left   = x - 1
-        right  = x + 1
-        #bound checks
-        topCheck    = top < len(self._grid)
-        bottomCheck = bottom >= 0
-        leftCheck   = left >= 0
-        rightCheck  = right < len(self._grid[0])
-
-        if rightCheck:
-            adjNodeList.append( (right, y) )
-            if bottomCheck:
-                adjNodeList.append( (right, bottom) )       
-            if topCheck:
-                adjNodeList.append( (right, top) )
-        if leftCheck:
-            adjNodeList.append( (left, y) )   
-            if bottomCheck:
-                adjNodeList.append( (left, bottom) )       
-            if topCheck:
-                adjNodeList.append( (left, top) )            
-        if topCheck:
-            adjNodeList.append( (x, top) )
-        if bottomCheck:
-            adjNodeList.append( (x, bottom) )
-        
-        return adjNodeList
-        
-        
-
     def getWeight(self, currPos, neighborPos):
         if currPos[0] != neighborPos[0] and currPos[1] != neighborPos[1]:
             return 1.414 #sqrt(2)
@@ -95,7 +59,6 @@ class PathFinderDijkstra(PathFinder):
 
         
         
-        
     #currPos  = (xCoord, yCoord)
     #endPos   = (xCoord, yCoord)
     def getShortestPath(self, currPos, endPos, currPathLen = 0, minPathLen =  float("inf")):
@@ -103,7 +66,7 @@ class PathFinderDijkstra(PathFinder):
             return (currPathLen, [endPos])
         currMin = float("inf")
         currPathPart = []
-        for neighbor in self.getNeighbors(currPos):
+        for neighbor in self.get_neighbors(currPos):
             nodeMinPathLen = self.getDist(neighbor)
             if currPathLen < nodeMinPathLen:
                 self.setDist(neighbor, currPathLen)
@@ -118,10 +81,10 @@ class PathFinderDijkstra(PathFinder):
         return (currMin, currPathPart)
         
     def getDist(self, node):
-        return self.nodesTraversed[node[1]][node[0]]
+        return self.nodesTraversed[node[0]][node[1]]
         
     def setDist(self, node, value):
-        self.nodesTraversed[node[1]][node[0]] = value
+        self.nodesTraversed[node[0]][node[1]] = value
         
     def weightGraphIterative(self, startPos, endPos):
         nodeQueue    = NodeQueue()
@@ -130,7 +93,7 @@ class PathFinderDijkstra(PathFinder):
         currPos = startPos
         while not nodeQueue.empty() and currPos != endPos:
             currPos = nodeQueue.dequeue()
-            for neighbor in self.getNeighbors(currPos):
+            for neighbor in self.get_neighbors(*currPos):
                 if neighbor not in nodeQueue.nodesSet and self.getDist(neighbor) != -1:
                     nodeQueue.enqueue(neighbor)
                 weight = self.getWeight(currPos, neighbor) + self.getDist(currPos)
@@ -147,7 +110,7 @@ class PathFinderDijkstra(PathFinder):
         while currPos != startPos:
             currMin      = float('inf')
             bestNeighbor = None
-            for neighbor in self.getNeighbors(currPos):
+            for neighbor in self.get_neighbors(*currPos):
                 if neighbor in traveled:
                     continue
                 traveled.append(neighbor)
