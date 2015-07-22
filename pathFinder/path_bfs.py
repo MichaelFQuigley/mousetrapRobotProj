@@ -18,7 +18,10 @@ class PathFinderBFS(PathFinder):
         
     def within_bounds(self, row, col):
         return row >= 0 and row < self._grid_height and col >= 0 and col < self._grid_width
-        
+
+    def is_blocked(self, row, col):
+        return self._grid[row][col]
+    
     def get_neighbors(self, row, col):
         """
         Get 8-adjacent neighbors.
@@ -31,7 +34,7 @@ class PathFinderBFS(PathFinder):
                     n_row = row + r
                     n_col = col + c
                     if self.within_bounds(n_row, n_col):
-                        if self._grid[n_row][n_col]: # ignore blocked cells
+                        if not self.is_blocked(n_row, n_col): # ignore blocked cells
                             n.append((n_row, n_col))
         return n
 
@@ -83,11 +86,11 @@ class PathFinderBFS(PathFinder):
 #Simple test...
 def run_test():
     
-    grid = [[True, False, True, True,  True],
-            [True, False, True, False, True],
-            [True, False, True, False, True],
-            [True, False, True, False, True],
-            [True, True,  True, False, True]]
+    grid = [[False, True,  False, False, False],
+            [False, True,  False, True,  False],
+            [False, True,  False, True,  False],
+            [False, True,  False, True,  False],
+            [False, False, False, True,  False]]
     origin = (0, 0)
     dest = (4, 4)
 

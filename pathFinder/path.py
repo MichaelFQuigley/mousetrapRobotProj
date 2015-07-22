@@ -1,3 +1,4 @@
+from copy import copy
 
 class PathFinder:
     """
@@ -7,11 +8,13 @@ class PathFinder:
 
     def __init__(self, grid):
         """
-        The grid is a boolean array where False locations are blocked.
+        The grid is a boolean array where True locations are blocked
+        and False locations are free.
         """
-        self._grid = grid
+        self._grid = copy(grid)
         self._grid_height = len(grid)
         self._grid_width = len(grid[0])
+        
         
     def get_path(self, origin, dest):
         """
