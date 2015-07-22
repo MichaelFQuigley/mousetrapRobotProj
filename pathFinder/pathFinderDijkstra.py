@@ -6,6 +6,9 @@ from copy import copy, deepcopy
 from math import sqrt
 from collections import deque
 
+from path import PathFinder
+
+
 class NodeQueue:
     def __init__(self):
         self.nodesList = deque()
@@ -33,13 +36,12 @@ class NodeQueue:
         return result
     
 
-class PathFinderDijkstra:
+class PathFinderDijkstra(PathFinder):
+
     def __init__(self, grid):
-        #grid is 2D array of Booleans
-        #a value of False in a cell indicates that the cell can be traveled to
-        #a value of True in a cell indicates that the cell is blocked and cannot be traveled to
-        self.grid           = grid
-        #-1 indicates the node cant be traversed
+        PathFinder.__init__(self, grid)
+
+		#-1 indicates the node cant be traversed
         self.nodesTraversed = [[-1.0 if grid[j][i] == 1 else float("inf")
                                     for i in range(len(grid[j]))] 
                                         for j in range(len(grid))]
@@ -55,10 +57,10 @@ class PathFinderDijkstra:
         left   = x - 1
         right  = x + 1
         #bound checks
-        topCheck    = top < len(self.grid)
+        topCheck    = top < len(self._grid)
         bottomCheck = bottom >= 0
         leftCheck   = left >= 0
-        rightCheck  = right < len(self.grid[0])
+        rightCheck  = right < len(self._grid[0])
 
         if rightCheck:
             adjNodeList.append( (right, y) )
@@ -157,6 +159,9 @@ class PathFinderDijkstra:
                 currPath.append(bestNeighbor)
         print(currPath)
         return self.getDist(endPos), currPath
+
+    def get_path(self, origin, dest):
+        return self.getShortestPathIterative(origin, dest)
         
 
         

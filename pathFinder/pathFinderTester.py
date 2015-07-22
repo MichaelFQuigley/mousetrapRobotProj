@@ -7,6 +7,7 @@ from pathFinderDijkstra import *
 import time
 
 import path
+from path_bfs import PathFinderBFS
 
 class PathFinderUI:
 
@@ -33,8 +34,8 @@ class PathFinderUI:
             col_width  = self.canvas.winfo_width()/self.cols_num
             row_height = self.canvas.winfo_height()/self.rows_num
             for cell in path:
-                row_ind = cell[1]
-                col_ind = cell[0]
+                row_ind = cell[0]
+                col_ind = cell[1]
                 self.tiles[row_ind][col_ind] = self.canvas.create_rectangle(col_ind*col_width, row_ind*row_height, (col_ind + 1)*col_width, (row_ind + 1)*row_height, fill="red")
         self.lastPath = []
         
@@ -43,8 +44,8 @@ class PathFinderUI:
         col_width  = self.canvas.winfo_width()/self.cols_num
         row_height = self.canvas.winfo_height()/self.rows_num
         for cell in path:
-            row_ind = cell[1]
-            col_ind = cell[0]
+            row_ind = cell[0]
+            col_ind = cell[1]
             self.tiles[row_ind][col_ind] = self.canvas.create_rectangle(col_ind*col_width, row_ind*row_height, (col_ind + 1)*col_width, (row_ind + 1)*row_height, fill="red")
       
     def reset(self):
@@ -56,14 +57,25 @@ class PathFinderUI:
 
       
     def submit(self):
-        pathFinder = PathFinderDijkstra(self.getGrid())
+        # Init grid, origin, and destination
+        grid = self.getGrid()
+        origin = (0,0)
+        dest = (self.cols_num - 1, self.rows_num - 1)
+
         startTime = time.time()
-        shortestPathLen, shortestPath = pathFinder.getShortestPathIterative((0,0), (self.cols_num - 1, self.rows_num - 1))
+        path_finder = PathFinderDijkstra(grid)
+        #path_finder = PathFinderBFS(grid)
+        path_length, path = path_finder.get_path(origin, dest)
         endTime = time.time()
+
         print("Time elapsed: " + str(endTime - startTime))
-        self.drawPath(shortestPath)
+        print("Path length: " + str(path_length))
+        print("Path: " + str(path))
+
+        self.drawPath(path)
+
         #self.gridPrettyPrint()
-       # pathFinder.prettyPrintNodesTraversed()
+        #pathFinder.prettyPrintNodesTraversed()
         
     #tile layout taken from http://stackoverflow.com/questions/26988204/using-2d-array-to-create-clickable-tkinter-canvas
     def clickCallback(self, event):
@@ -80,7 +92,7 @@ class PathFinderUI:
 
     def getGrid(self):
         return [[(self.tiles[j][i] != None) for i in range(self.cols_num)] for j in range(self.rows_num)]
-     
+    
     def gridPrettyPrint(self):
         print("Grid:")
         for i in range(self.rows_num):
@@ -89,5 +101,5 @@ class PathFinderUI:
 
 
 
-pt = PathFinderUI(50, 50)
+pt = PathFinderUI(5, 5)
 pt.tk.mainloop()
