@@ -17,6 +17,7 @@ class PathFinder:
         """
         Returns a tuple, where the first element is the path length,
         and the second element is the path as a list of cells.
+        Returns (float("inf"), []) if there is no path to the destination.
         Cells are (row, column) tuples.
         """
         pass

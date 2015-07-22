@@ -37,8 +37,7 @@ class PathFinderBFS(PathFinder):
 
     def get_path(self, origin, dest):
         """
-        Compute shortest path using BFS.
-        Returns path length, and path as a list of nodes.
+        Compute path using BFS.
         """
         # Compute distances
         distance = [[float("inf") for col in range(self._grid_width)] for row in range(self._grid_height)]
@@ -61,6 +60,9 @@ class PathFinderBFS(PathFinder):
                     visited[n[0]][n[1]] = True
 
         # Determine path
+        if not visited[dest[0]][dest[1]]:
+            return float("inf"), []
+
         path_length = distance[dest[0]][dest[1]]
         row = dest[0]
         col = dest[1]
