@@ -21,7 +21,7 @@ class PathFinderUI:
         self.fHeight  = 500
         self.canvas   = Canvas(self.tk, width=self.fWidth, height=self.fHeight, borderwidth=5, background='white')
         self.sbmtBtn  = Button(self.tk, text="Submit", command=self.submit)
-        self.rstBtn  = Button(self.tk, text="Reset", command=self.reset)
+        self.rstBtn  = Button(self.tk, text="Reset", command=self.reset_path)
         self.tk.wm_title("Path Finder Test UI")
         self.canvas.pack()
         self.sbmtBtn.pack()
@@ -50,27 +50,17 @@ class PathFinderUI:
             self.canvas.delete(self.tiles[row][col])
             self.tiles[row][col] = None 
 
-    def resetPath(self):
-        if len(self.lastPath) > 0:
-            col_width  = self.canvas.winfo_width()/self.cols_num
-            row_height = self.canvas.winfo_height()/self.rows_num
-            for cell in path:
-                row_ind = cell[0]
-                col_ind = cell[1]
-                self.tiles[row_ind][col_ind] = self.create_rectangle(row_ind, col_ind, "red")
-        self.lastPath = []
-        
-    def drawPath(self, path):
+    def draw_path(self, path):
         self.lastPath = path
         col_width  = self.canvas.winfo_width()/self.cols_num
         row_height = self.canvas.winfo_height()/self.rows_num
         for cell in path:
             row_ind = cell[0]
             col_ind = cell[1]
-            self.path_tiles[row_ind][col_ind] = self.create_rectangle(row_ind, col_ind, "red")
+            if not self.path_tiles[row_ind][col_ind]:
+                self.path_tiles[row_ind][col_ind] = self.create_rectangle(row_ind, col_ind, "red")
 
-    # Reset path only (not the obstacles) 
-    def reset(self):
+    def reset_path(self):
         for row_ind in range(self.rows_num):
             for col_ind in range(self.cols_num):
                 if self.path_tiles[row_ind][col_ind]:
@@ -94,7 +84,7 @@ class PathFinderUI:
         print("Path length: " + str(path_length))
         print("Path: " + str(path))
 
-        self.drawPath(path)
+        self.draw_path(path)
 
         #self.gridPrettyPrint()
         #pathFinder.prettyPrintNodesTraversed()
