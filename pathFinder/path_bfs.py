@@ -1,4 +1,4 @@
-from collections import deque
+from Queue import Queue
 
 from path import PathFinder
 
@@ -25,10 +25,10 @@ class PathFinderBFS(PathFinder):
         visited = [[False for col in range(self._grid_width)] for row in range(self._grid_height)]
         distance[origin[0]][origin[1]] = 0
         visited[origin[0]][origin[1]] = True
-        q = deque()
-        q.appendleft(origin)
+        q = Queue()
+        q.put(origin)
         while q:
-            node = q.pop()
+            node = q.get()
             # Check if destination reached
             if node == dest:
                 break
@@ -37,7 +37,7 @@ class PathFinderBFS(PathFinder):
             for n in neighbors:
                 if not visited[n[0]][n[1]]:
                     distance[n[0]][n[1]] = distance[node[0]][node[1]] + 1
-                    q.appendleft(n)
+                    q.put(n)
                     visited[n[0]][n[1]] = True
 
         # Determine path
