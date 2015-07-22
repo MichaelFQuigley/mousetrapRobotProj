@@ -15,7 +15,8 @@ class PathFinderUI:
         self.tk       = Tk()
         self.rows_num = rows_num
         self.cols_num = cols_num
-        self.tiles    = [[None for _ in range(cols_num)] for _ in range(rows_num)]
+        self.tiles    = [[None for _ in range(cols_num)] for _ in range(rows_num)]          # Obstacle tiles
+        self.path_tiles    = [[None for _ in range(cols_num)] for _ in range(rows_num)]     # Path tiles
         self.fWidth   = 500
         self.fHeight  = 500
         self.canvas   = Canvas(self.tk, width=self.fWidth, height=self.fHeight, borderwidth=5, background='white')
@@ -28,7 +29,27 @@ class PathFinderUI:
         self.canvas.bind('<Button-1>', self.clickCallback)
         self.canvas.bind('<B1-Motion>', self.clickCallback)
         self.lastPath = []
-     
+
+    def get_col_width(self):
+        return self.canvas.winfo_width() / self.cols_num
+
+    def get_row_height(self):
+        return self.canvas.winfo_height() / self.rows_num
+
+    def create_rectangle(self, row, col, color):
+        x1 = col * self.get_col_width()
+        y1 = row * self.get_row_height()
+        x2 = x1 + self.get_col_width()
+        y2 = y1 + self.get_row_height()
+        return self.canvas.create_rectangle(x1, y1, x2, y2, fill=color)
+        
+    def set_obstacle(self, row, col, obstacle=True):
+        if obstacle:
+            self.tiles[row][col] = self.create_rectangle(row, col, "black")
+        else:
+            self.canvas.delete(self.tiles[row][col])
+            self.tiles[row][col] = None 
+
     def resetPath(self):
         if len(self.lastPath) > 0:
             col_width  = self.canvas.winfo_width()/self.cols_num
@@ -36,7 +57,7 @@ class PathFinderUI:
             for cell in path:
                 row_ind = cell[0]
                 col_ind = cell[1]
-                self.tiles[row_ind][col_ind] = self.canvas.create_rectangle(col_ind*col_width, row_ind*row_height, (col_ind + 1)*col_width, (row_ind + 1)*row_height, fill="red")
+                self.tiles[row_ind][col_ind] = self.create_rectangle(row_ind, col_ind, "red")
         self.lastPath = []
         
     def drawPath(self, path):
@@ -46,14 +67,15 @@ class PathFinderUI:
         for cell in path:
             row_ind = cell[0]
             col_ind = cell[1]
-            self.tiles[row_ind][col_ind] = self.canvas.create_rectangle(col_ind*col_width, row_ind*row_height, (col_ind + 1)*col_width, (row_ind + 1)*row_height, fill="red")
-      
+            self.path_tiles[row_ind][col_ind] = self.create_rectangle(row_ind, col_ind, "red")
+
+    # Reset path only (not the obstacles) 
     def reset(self):
         for row_ind in range(self.rows_num):
             for col_ind in range(self.cols_num):
-                if self.tiles[row_ind][col_ind]:
-                    self.canvas.delete(self.tiles[row_ind][col_ind])
-                    self.tiles[row_ind][col_ind] = None
+                if self.path_tiles[row_ind][col_ind]:
+                    self.canvas.delete(self.path_tiles[row_ind][col_ind])
+                    self.path_tiles[row_ind][col_ind] = None
 
       
     def submit(self):
@@ -63,8 +85,8 @@ class PathFinderUI:
         dest = (self.cols_num - 1, self.rows_num - 1)
 
         startTime = time.time()
-        path_finder = PathFinderDijkstra(grid)
-        #path_finder = PathFinderBFS(grid)
+        #path_finder = PathFinderDijkstra(grid)
+        path_finder = PathFinderBFS(grid)
         path_length, path = path_finder.get_path(origin, dest)
         endTime = time.time()
 
@@ -76,19 +98,15 @@ class PathFinderUI:
 
         #self.gridPrettyPrint()
         #pathFinder.prettyPrintNodesTraversed()
-        
+
     #tile layout taken from http://stackoverflow.com/questions/26988204/using-2d-array-to-create-clickable-tkinter-canvas
     def clickCallback(self, event):
         col_width  = self.canvas.winfo_width()/self.cols_num
         row_height = self.canvas.winfo_height()/self.rows_num
         col_ind = int(event.x // col_width)
         row_ind = int(event.y // row_height)
-
-        if not self.tiles[row_ind][col_ind]:
-            self.tiles[row_ind][col_ind] = self.canvas.create_rectangle(col_ind*col_width, row_ind*row_height, (col_ind + 1)*col_width, (row_ind + 1)*row_height, fill="black")
-        else:
-            self.canvas.delete(self.tiles[row_ind][col_ind])
-            self.tiles[row_ind][col_ind] = None
+        obstacle_present = self.tiles[row_ind][col_ind]
+        self.set_obstacle(row_ind, col_ind, not obstacle_present)
 
     def getGrid(self):
         return [[(self.tiles[j][i] != None) for i in range(self.cols_num)] for j in range(self.rows_num)]
