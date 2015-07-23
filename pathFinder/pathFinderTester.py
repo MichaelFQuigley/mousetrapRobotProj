@@ -6,8 +6,8 @@ from Tkinter import *
 from pathFinderDijkstra import *
 import time
 
-import path
 from path_bfs import PathFinderBFS
+from path_as import PathFinderAStar
 
 class PathFinderUI:
 
@@ -17,8 +17,8 @@ class PathFinderUI:
         self.cols_num = cols_num
         self.tiles    = [[None for _ in range(cols_num)] for _ in range(rows_num)]          # Obstacle tiles
         self.path_tiles    = [[None for _ in range(cols_num)] for _ in range(rows_num)]     # Path tiles
-        self.fWidth   = 500
-        self.fHeight  = 500
+        self.fWidth   = 800
+        self.fHeight  = 800
         self.canvas   = Canvas(self.tk, width=self.fWidth, height=self.fHeight, borderwidth=5, background='white')
         self.sbmtBtn  = Button(self.tk, text="Submit", command=self.submit)
         self.rstBtn  = Button(self.tk, text="Reset", command=self.reset_path)
@@ -76,16 +76,26 @@ class PathFinderUI:
 
         startTime = time.time()
         #path_finder = PathFinderDijkstra(grid)
-        path_finder = PathFinderBFS(grid)
+        #path_finder = PathFinderBFS(grid)
+        path_finder = PathFinderAStar(grid)
         path_length, path = path_finder.get_path(origin, dest)
         endTime = time.time()
 
         print("Time elapsed: " + str(endTime - startTime))
         print("Path length: " + str(path_length))
-        print("Path: " + str(path))
+        #print("Path: " + str(path))
 
         self.draw_path(path)
 
+        # Temporary hack to highlight visited nodes
+        if path_finder.visited:
+            for row in range(self.rows_num):
+                for col in range(self.cols_num):
+                    if (path_finder.visited[row][col]):
+                        if not self.path_tiles[row][col]:
+                            self.path_tiles[row][col] = self.create_rectangle(row, col, "yellow")
+            
+        
         #self.gridPrettyPrint()
         #pathFinder.prettyPrintNodesTraversed()
 
@@ -109,5 +119,5 @@ class PathFinderUI:
 
 
 
-pt = PathFinderUI(5, 5)
+pt = PathFinderUI(200, 200)
 pt.tk.mainloop()
