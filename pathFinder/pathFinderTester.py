@@ -89,11 +89,16 @@ class PathFinderUI:
 
         # Temporary hack to highlight visited nodes
         if path_finder.visited:
-            for row in range(self.rows_num):
-                for col in range(self.cols_num):
-                    if (path_finder.visited[row][col]):
-                        if not self.path_tiles[row][col]:
-                            self.path_tiles[row][col] = self.create_rectangle(row, col, "yellow")
+            for cell in path_finder.visited:
+                row = cell[0]
+                col = cell[1]
+                if not self.path_tiles[row][col]:
+                    self.path_tiles[row][col] = self.create_rectangle(row, col, "yellow")
+##            for row in range(self.rows_num):
+##                for col in range(self.cols_num):
+##                    if (path_finder.visited[row][col]):
+##                        if not self.path_tiles[row][col]:
+##                            self.path_tiles[row][col] = self.create_rectangle(row, col, "yellow")
             
         
         #self.gridPrettyPrint()

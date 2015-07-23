@@ -1,6 +1,3 @@
-#from math import abs
-
-from Queue import Queue
 from Queue import PriorityQueue
 
 from path import PathFinder
@@ -12,10 +9,10 @@ def print_grid(grid):
         print(grid[row])
 
 
-
 class PathFinderAStar(PathFinder):
     """
     A* Search path finder.
+    See: http://www.redblobgames.com/pathfinding/a-star/introduction.html
     """
     def __init__(self, grid):
         PathFinder.__init__(self, grid)
@@ -30,57 +27,45 @@ class PathFinderAStar(PathFinder):
         #return dy * dy + dx * dx # Squared Euclidean distance
 
     def get_path(self, origin, dest):
-        """
-        Compute path using A*.
-        """
-        # Compute distances
+
+        # Compute path costs
         q = PriorityQueue()
-        distance = [[float("inf") for col in range(self._grid_width)] for row in range(self._grid_height)]
-        visited = [[False for col in range(self._grid_width)] for row in range(self._grid_height)]
-        distance[origin[0]][origin[1]] = 0
-        visited[origin[0]][origin[1]] = True
-        q.put((0, origin))
+        q.put((0, origin)) # store (priority, node)
+        path_cost = {}
+        prev_node = {} # for backtracking
+        path_cost[origin] = 0
+        prev_node[origin] = None
+
         while not q.empty():
             node = q.get()[1]
-            #print node
             
             if node == dest:
-                #print("Reached destination!")
                 break
 
             neighbors = self.get_neighbors(node[0], node[1])
             for n in neighbors:
-                #new_cost = cost_so_far[current] + graph.cost(current, next)
-                #distance[n[0]][n[1]] = distance[node[0]][node[1]] + 1
-
-                new_cost = distance[node[0]][node[1]] + 1 # this 1 may not be a constant
-                if not visited[n[0]][n[1]] or new_cost < distance[n[0]][n[1]]:
-                    distance[n[0]][n[1]] = new_cost
+                step_cost = 1 # TODO: this may not be a constant (diagonals should be different)
+                new_cost = path_cost[node] + step_cost
+                if n not in path_cost or new_cost < path_cost[n]:
+                    path_cost[n] = new_cost
                     priority = new_cost + self.heuristic(dest, n)
-                    #print priority, n
+                    prev_node[n] = node
                     q.put((priority, n))
-                    #came_from[next] = current
-                    visited[n[0]][n[1]] = True
 
-        # Determine path
-        if not visited[dest[0]][dest[1]]:
+        # No path found
+        if dest not in path_cost:
             return float("inf"), []
 
-        path_length = distance[dest[0]][dest[1]]
-        row = dest[0]
-        col = dest[1]
-        path = [(row, col)]
-        while row != origin[0] or col != origin[1]:
-            neighbors = self.get_neighbors(row, col)
-            for n in neighbors:
-                if distance[n[0]][n[1]] < distance[row][col]:
-                    row = n[0]
-                    col = n[1]
-                    path.append((row, col))
-                    break
+        # Determine path
+        path_length = path_cost[dest]
+        node = dest
+        path = [dest]
+        while node != origin:
+            node = prev_node[node]
+            path.append(node)
         path.reverse()
 
-        self.visited = visited  # temporary, for the UI
+        self.visited = path_cost  # temporary, for the UI
         return path_length, path
 
 
