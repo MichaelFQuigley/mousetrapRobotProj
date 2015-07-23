@@ -1,4 +1,4 @@
-from collections import deque
+from Queue import Queue
 
 from path import PathFinder
 
@@ -15,25 +15,6 @@ class PathFinderBFS(PathFinder):
     """
     def __init__(self, grid):
         PathFinder.__init__(self, grid)
-        
-    def within_bounds(self, row, col):
-        return row >= 0 and row < self._grid_height and col >= 0 and col < self._grid_width
-        
-    def get_neighbors(self, row, col):
-        """
-        Get 8-adjacent neighbors.
-        Ignores blocked cells.
-        """
-        n = []
-        for r in [-1, 0, 1]:
-            for c in [-1, 0, 1]:
-                if r != 0 or c != 0:
-                    n_row = row + r
-                    n_col = col + c
-                    if self.within_bounds(n_row, n_col):
-                        if self._grid[n_row][n_col]: # ignore blocked cells
-                            n.append((n_row, n_col))
-        return n
 
     def get_path(self, origin, dest):
         """
@@ -44,10 +25,10 @@ class PathFinderBFS(PathFinder):
         visited = [[False for col in range(self._grid_width)] for row in range(self._grid_height)]
         distance[origin[0]][origin[1]] = 0
         visited[origin[0]][origin[1]] = True
-        q = deque()
-        q.appendleft(origin)
+        q = Queue()
+        q.put(origin)
         while q:
-            node = q.pop()
+            node = q.get()
             # Check if destination reached
             if node == dest:
                 break
@@ -56,7 +37,7 @@ class PathFinderBFS(PathFinder):
             for n in neighbors:
                 if not visited[n[0]][n[1]]:
                     distance[n[0]][n[1]] = distance[node[0]][node[1]] + 1
-                    q.appendleft(n)
+                    q.put(n)
                     visited[n[0]][n[1]] = True
 
         # Determine path
@@ -83,11 +64,11 @@ class PathFinderBFS(PathFinder):
 #Simple test...
 def run_test():
     
-    grid = [[True, False, True, True,  True],
-            [True, False, True, False, True],
-            [True, False, True, False, True],
-            [True, False, True, False, True],
-            [True, True,  True, False, True]]
+    grid = [[False, True,  False, False, False],
+            [False, True,  False, True,  False],
+            [False, True,  False, True,  False],
+            [False, True,  False, True,  False],
+            [False, False, False, True,  False]]
     origin = (0, 0)
     dest = (4, 4)
 

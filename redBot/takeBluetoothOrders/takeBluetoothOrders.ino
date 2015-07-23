@@ -1,5 +1,7 @@
 #include <RedBot.h>
 
+RedBotSoftwareSerial swsp;
+
 // Instantiate the motors.
 RedBotMotors motors;
 
@@ -11,40 +13,72 @@ RedBotSensor rightSensor = RedBotSensor(A7);
 String leftWheel = "0";
 char delimeter(',');
 String rightWheel = "0";
-char endOrders('$');
+char endOrders('\n');
 
-int waitBetweenOrders = 1000; // milliseconds
 const int sensorThreshold = 600;
-bool obeyBlindly = true;
+
+typedef void (*State)(void);
+void blink();
+void normal();
+void revolt();
+State state = blink;
 
 void setup() {
+  pinMode(A1, INPUT_PULLUP);
+  pinMode(LED_BUILTIN, OUTPUT);
   // Start serial port at 9600 bps
-  Serial.begin(9600);
-  Serial.println("Setup complete");
+  swsp.begin(9600);
 }
 
 void loop() {
-  // If we run into a mousetrap or line, stop and tell the brain
-  if (obeyBlindly && (leftSensor.read() < sensorThreshold || middleSensor.read() < sensorThreshold || rightSensor.read() < sensorThreshold)) {
+  state();
+}
+
+void blink() {
+  for (int i = 0; i < 4; i++) {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(250);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(250);
+  }
+  swsp.println("Setup complete. Waiting for orders.");
+  state = normal;
+}
+
+void normal() {  
+  // If we run into a mousetrap or line, revolt
+  if (leftSensor.read() < sensorThreshold || middleSensor.read() < sensorThreshold || rightSensor.read() < sensorThreshold) {
     motors.brake();
-    obeyBlindly = false;
-    Serial.println("YOU LIED TO ME!!!");
-    Serial.write("DANGER");
+    swsp.write("DANGER");
+    swsp.println("\nI hit something bad");
+    state = revolt;
   }
   
-  // If there are orders from the brain, do them (most of the time)
-  if (Serial.available() > 0) {
-    leftWheel = Serial.readStringUntil(delimeter);
-    rightWheel = Serial.readStringUntil(endOrders);
-    if (obeyBlindly || (leftWheel.toInt() <= 0 && rightWheel.toInt() <= 0)) {
-      obeyBlindly = true;
-      Serial.println("Left wheel: " + leftWheel + "    Right wheel: " + rightWheel);
+  // If there are orders from the brain, do them
+  else if (swsp.available() > 0) {
+    leftWheel = swsp.readStringUntil(delimeter);
+    rightWheel = swsp.readStringUntil(endOrders);
+    swsp.println("Left wheel: " + leftWheel + "    Right wheel: " + rightWheel);
+    motors.leftDrive(leftWheel.toInt());
+    motors.rightDrive(rightWheel.toInt());
+  }
+}
+
+void revolt() {
+  // Wait until we're told to back up
+  if (swsp.available() > 0) {
+    leftWheel = swsp.readStringUntil(delimeter);
+    rightWheel = swsp.readStringUntil(endOrders);
+    if (leftWheel.toInt() <= 0 && rightWheel.toInt() <= 0) {
+      swsp.println("Backing up");
+      swsp.println("Left wheel: " + leftWheel + "    Right wheel: " + rightWheel);
       motors.leftDrive(leftWheel.toInt());
       motors.rightDrive(rightWheel.toInt());
-      delay(waitBetweenOrders);
+      delay(250);
+      state = normal;
     }
     else {
-      Serial.println("I'm not listening to you . . . ");
+      swsp.println("I need to back up. Ignoring command (Left wheel: " + leftWheel + "    Right wheel: " + rightWheel + ")");
     }
   }
 }
