@@ -8,8 +8,8 @@ class PathFinder:
 
     def __init__(self, grid):
         """
-        The grid is a boolean array where True locations are blocked
-        and False locations are free.
+        The grid is a NumPy array where cells with a value of zero
+        are free, and locations with any other value are blocked.
         """
         self._grid = copy(grid)
         self._grid_height = len(grid)
@@ -25,7 +25,7 @@ class PathFinder:
         """
         Determines if a cell is blocked and cannot be traversed.
         """
-        return self._grid[row][col]
+        return self._grid[row][col] != 0
 
     def get_neighbors(self, row, col):
         """

@@ -1,3 +1,4 @@
+import numpy as np
 from Queue import PriorityQueue
 
 from path import PathFinder
@@ -72,11 +73,11 @@ class PathFinderAStar(PathFinder):
 #Simple test...
 def run_test():
 
-    grid = [[False, True,  False, False, False],
-            [False, True,  False, True,  False],
-            [False, True,  False, True,  False],
-            [False, True,  False, True,  False],
-            [False, False, False, True,  False]]
+    grid = np.array([[0, 1, 0, 0, 0],
+                     [0, 1, 0, 1, 0],
+                     [0, 1, 0, 1, 0],
+                     [0, 1, 0, 1, 0],
+                     [0, 0, 0, 1, 0]])
     origin = (0, 0)
     dest = (4, 4)
 
