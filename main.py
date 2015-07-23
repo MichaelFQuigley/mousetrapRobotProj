@@ -16,21 +16,16 @@ class Loop(QtCore.QObject):
     @QtCore.pyqtSlot()
     def process_camera_frames(self):
         while True:
-            if cameras.cap.isOpened():
-                ret, frame = cameras.cap.read()
-                if frame is not None:
-                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                    h, w = gray.shape
-                    ratio = 640 / max(h, w)
-                    if ratio < 1:
-                        gray = cv2.resize(gray, (0,0), fx=ratio, fy=ratio)
-                    self.image_ready.emit(gray, transform.bitmap_from_image(gray))
+            frame = cameras.read()
+            if frame is None:
+                time.sleep(.25)
             else:
-                time.sleep(.5)
+                self.image_ready.emit(frame, transform.bitmap_from_image(frame))
+            time.sleep(.25)
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    cameras.init()
+    cameras.init(1024)
     if cameras.detected > 0:
         cameras.VideoCapture(0)
     else:

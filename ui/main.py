@@ -6,6 +6,7 @@ from PIL import Image
 from functools import partial
 from os import path
 from SlidersWidget import SlidersWidget
+import cv2
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
@@ -66,6 +67,7 @@ class MainWindow(QtGui.QMainWindow):
         print self.processed.pixmap()
 
 def as_pixmap(frame):
-    pil_image = Image.fromarray(np.uint8(frame))
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    pil_image = Image.fromarray(frame, 'RGB')
     qt_image = ImageQt.ImageQt(pil_image)
     return QtGui.QPixmap.fromImage(qt_image)
