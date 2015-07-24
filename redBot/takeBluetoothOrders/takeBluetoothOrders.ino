@@ -10,31 +10,23 @@ RedBotSensor leftSensor = RedBotSensor(A3);
 RedBotSensor middleSensor = RedBotSensor(A2);
 RedBotSensor rightSensor = RedBotSensor(A7);
 
-String leftWheel = "0";
+int leftWheel = 0;
 char delimeter(',');
-String rightWheel = "0";
+int rightWheel = 0;
 char endOrders('\n');
 
 const int sensorThreshold = 600;
 
 typedef void (*State)(void);
-void blink();
 void normal();
 void revolt();
-State state = blink;
+State state = normal;
 
 void setup() {
   pinMode(A1, INPUT_PULLUP);
   pinMode(LED_BUILTIN, OUTPUT);
   // Start serial port at 9600 bps
   swsp.begin(9600);
-}
-
-void loop() {
-  state();
-}
-
-void blink() {
   for (int i = 0; i < 4; i++) {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(250);
@@ -42,7 +34,10 @@ void blink() {
     delay(250);
   }
   swsp.println("Setup complete. Waiting for orders.");
-  state = normal;
+}
+
+void loop() {
+  state();
 }
 
 void normal() {  
@@ -56,29 +51,35 @@ void normal() {
   
   // If there are orders from the brain, do them
   else if (swsp.available() > 0) {
-    leftWheel = swsp.readStringUntil(delimeter);
-    rightWheel = swsp.readStringUntil(endOrders);
-    swsp.println("Left wheel: " + leftWheel + "    Right wheel: " + rightWheel);
-    motors.leftDrive(leftWheel.toInt());
-    motors.rightDrive(rightWheel.toInt());
+    getUpdatedOrders();
+    executeOrders();
   }
 }
 
 void revolt() {
   // Wait until we're told to back up
   if (swsp.available() > 0) {
-    leftWheel = swsp.readStringUntil(delimeter);
-    rightWheel = swsp.readStringUntil(endOrders);
-    if (leftWheel.toInt() <= 0 && rightWheel.toInt() <= 0) {
+    getUpdatedOrders();
+    if (leftWheel <= 0 && rightWheel <= 0) {
       swsp.println("Backing up");
-      swsp.println("Left wheel: " + leftWheel + "    Right wheel: " + rightWheel);
-      motors.leftDrive(leftWheel.toInt());
-      motors.rightDrive(rightWheel.toInt());
+      executeOrders();
       delay(250);
       state = normal;
     }
     else {
-      swsp.println("I need to back up. Ignoring command (Left wheel: " + leftWheel + "    Right wheel: " + rightWheel + ")");
+      swsp.println("I need to back up. Ignoring command (Left wheel: " + String(leftWheel) + "    Right wheel: " + String(rightWheel) + ")");
     }
   }
 }
+
+void getUpdatedOrders() {
+  leftWheel = swsp.readStringUntil(delimeter).toInt();
+  rightWheel = swsp.readStringUntil(endOrders).toInt();
+}
+
+void executeOrders() {
+  swsp.println("Left wheel: " + String(leftWheel) + "    Right wheel: " + String(rightWheel));
+  motors.leftDrive(leftWheel);
+  motors.rightDrive(rightWheel);
+}
+
