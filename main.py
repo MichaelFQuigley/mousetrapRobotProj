@@ -29,7 +29,7 @@ if __name__ == '__main__':
     if cameras.detected > 0:
         cameras.VideoCapture(0)
     else:
-        cameras.VideoCapture(path.join('img', 'mousetraps.jpg'))
+        cameras.VideoCapture(path.join('img', '73.jpg'))
     main = ui.MainWindow()
     thread = QtCore.QThread()
     work = Loop()

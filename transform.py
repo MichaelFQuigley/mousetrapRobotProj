@@ -4,48 +4,19 @@ import cv2
 RATIO_HEIGHT_WIDTH = 1.571929824561403
 
 
-def order_points(pts):
-    # initialzie a list of coordinates that will be ordered
-    # such that the first entry in the list is the top-left,
-    # the second entry is the top-right, the third is the
-    # bottom-right, and the fourth is the bottom-left
-    rect = np.zeros((4, 2), dtype="float32")
-
-    # the top-left point will have the smallest sum, whereas
-    # the bottom-right point will have the largest sum
-    s = pts.sum(axis=1)
-    rect[0] = pts[np.argmin(s)]
-    rect[2] = pts[np.argmax(s)]
-
-    # now, compute the difference between the points, the
-    # top-right point will have the smallest difference,
-    # whereas the bottom-left will have the largest difference
-    diff = np.diff(pts, axis=1)
-    rect[1] = pts[np.argmin(diff)]
-    rect[3] = pts[np.argmax(diff)]
-
-    # return the ordered coordinates
-    return rect
-
-
 def four_point_transform(image, pts):
-    # obtain a consistent order of the points and unpack them
-    # individually
-    rect = order_points(pts)
-    (tl, tr, br, bl) = rect
-
     # compute the width of the new image, which will be the
     # maximum distance between bottom-right and bottom-left
     # x-coordiates or the top-right and top-left x-coordinates
-    widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
-    widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+    widthA = np.sqrt(((pts[2][0] - pts[3][0]) ** 2) + ((pts[2][1] - pts[3][1]) ** 2))
+    widthB = np.sqrt(((pts[1][0] - pts[0][0]) ** 2) + ((pts[1][1] - pts[0][1]) ** 2))
     maxWidth = max(int(widthA), int(widthB))
 
     # compute the height of the new image, which will be the
     # maximum distance between the top-right and bottom-right
     # y-coordinates or the top-left and bottom-left y-coordinates
-    heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
-    heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+    heightA = np.sqrt(((pts[1][0] - pts[2][0]) ** 2) + ((pts[1][1] - pts[2][1]) ** 2))
+    heightB = np.sqrt(((pts[0][0] - pts[3][0]) ** 2) + ((pts[0][1] - pts[3][1]) ** 2))
     maxHeight = max(int(heightA), int(heightB))
 
     # now that we have the dimensions of the new image, construct
@@ -60,7 +31,7 @@ def four_point_transform(image, pts):
         [0, maxHeight - 1]], dtype="float32")
 
     # compute the perspective transform matrix and then apply it
-    M = cv2.getPerspectiveTransform(rect, dst)
+    M = cv2.getPerspectiveTransform(pts, dst)
     warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
 
     # return the warped image
@@ -87,7 +58,7 @@ def filter(hsvImg, mins, maxes):
 def all_the_things(image, params):
     cv2.imwrite('calibratergb.jpg', image)
     warped_image = four_point_transform(image, params['pts'])
-    warped_image = cv2.resize(warped_image, (600, int(400*RATIO_HEIGHT_WIDTH)))
+    warped_image = cv2.resize(warped_image, (600, int(600*RATIO_HEIGHT_WIDTH)))
     cv2.imwrite('warped.jpg', warped_image)
     hsvImg = cv2.cvtColor(warped_image, cv2.COLOR_BGR2HSV)
     filtered_image = filter(hsvImg, params['mins'], params['maxes'])
