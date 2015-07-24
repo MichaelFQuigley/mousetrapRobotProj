@@ -6,6 +6,7 @@ from PIL import Image
 from functools import partial
 from os import path
 from SlidersWidget import SlidersWidget
+from PyQt4.Qt import QRect
 import cv2
 
 
@@ -90,7 +91,8 @@ class MainWindow(QtGui.QMainWindow):
         return ret
 
     def show_sliders(self):
-        pass
+        self.popup = popup(self, self.slidersWidget)
+        self.popup.show()
 
 
 def as_pixmap(frame):
@@ -103,3 +105,24 @@ def as_pixmap(frame):
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     qt_image = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_RGB888)
     return QtGui.QPixmap.fromImage(qt_image)
+
+
+class popup(QtGui.QWidget):
+    def __init__(self, parent = None, widget=None):
+        QtGui.QWidget.__init__(self, parent)
+        layout = QtGui.QGridLayout(self)
+        layout.addWidget(widget)
+        # adjust the margins or you will get an invisible, unintended border
+        layout.setContentsMargins(0, 0, 0, 0)
+        # need to set the layout
+        self.setLayout(layout)
+        self.adjustSize()
+        # tag this widget as a popup
+        self.setWindowFlags(QtCore.Qt.Popup)
+        # calculate the botoom right point from the parents rectangle
+        point = widget.rect().bottomRight()
+        # map that point as a global position
+        global_point = widget.mapToGlobal(point)
+        # by default, a widget will be placed from its top-left corner, so
+        # we need to move it to the left based on the widgets width
+        self.move(global_point - QtCore.QPoint(self.width(), 0))
