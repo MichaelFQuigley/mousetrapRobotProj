@@ -6,16 +6,16 @@ from PyQt4 import QtCore
 class SlidersWidget(QtGui.QWidget):
     def __init__(self, parent):
         super(SlidersWidget, self).__init__(parent)
-        self.eySlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.exSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.dySlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.dxSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.bMaxSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.bMinSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.rMinSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.rMaxSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.gMinSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.gMaxSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+        self.eySlider = self.createSlider(1, 100, 1)
+        self.exSlider = self.createSlider(1, 100, 1)
+        self.dySlider = self.createSlider(1, 100, 1)
+        self.dxSlider = self.createSlider(1, 100, 1)
+        self.rMinSlider = self.createSlider(0, 255, 0)
+        self.rMaxSlider = self.createSlider(0, 255, 255)
+        self.gMinSlider = self.createSlider(0, 255, 0)
+        self.gMaxSlider = self.createSlider(0, 255, 255)
+        self.bMinSlider = self.createSlider(0, 255, 100)
+        self.bMaxSlider = self.createSlider(0, 255, 255)
         self.initWidget()
 
     def initWidget(self):
@@ -52,45 +52,15 @@ class SlidersWidget(QtGui.QWidget):
         eyLabel = QtGui.QLabel('ErosionY', self)
         eyBox.addWidget(eyLabel, 1)
 
-        self.rMinSlider.setMinimum(0)
-        self.rMinSlider.setMaximum(255)
-        self.rMinSlider.setSliderPosition(0)
         rMinBox.addWidget(self.rMinSlider, 2)
-        self.rMaxSlider.setMinimum(0)
-        self.rMaxSlider.setMaximum(255)
-        self.rMaxSlider.setSliderPosition(255)
         rMaxBox.addWidget(self.rMaxSlider, 2)
-        self.gMinSlider.setMinimum(0)
-        self.gMinSlider.setMaximum(255)
-        self.gMinSlider.setSliderPosition(0)
         gMinBox.addWidget(self.gMinSlider, 2)
-        self.gMaxSlider.setMinimum(0)
-        self.gMaxSlider.setMaximum(255)
-        self.gMaxSlider.setSliderPosition(255)
         gMaxBox.addWidget(self.gMaxSlider, 2)
-        self.bMinSlider.setMinimum(0)
-        self.bMinSlider.setMaximum(255)
-        self.bMinSlider.setSliderPosition(0)
         bMinBox.addWidget(self.bMinSlider, 2)
-        self.bMaxSlider.setMinimum(0)
-        self.bMaxSlider.setMaximum(255)
-        self.bMaxSlider.setSliderPosition(255)
         bMaxBox.addWidget(self.bMaxSlider, 2)
-        self.dxSlider.setMinimum(0)
-        self.dxSlider.setMaximum(100)
-        self.dxSlider.setSliderPosition(0)
         dxBox.addWidget(self.dxSlider, 2)
-        self.dySlider.setMinimum(0)
-        self.dySlider.setMaximum(100)
-        self.dySlider.setSliderPosition(0)
         dyBox.addWidget(self.dySlider, 2)
-        self.exSlider.setMinimum(0)
-        self.exSlider.setMaximum(100)
-        self.exSlider.setSliderPosition(0)
         exBox.addWidget(self.exSlider, 2)
-        self.eySlider.setMinimum(0)
-        self.eySlider.setMaximum(100)
-        self.eySlider.setSliderPosition(0)
         eyBox.addWidget(self.eySlider, 2)
 
         vbox = Qt.QGridLayout()
@@ -109,10 +79,13 @@ class SlidersWidget(QtGui.QWidget):
 
         self.setLayout(vbox)
 
-    def buildSlider(self, min, max):
+    def createSlider(self, min, max, default=0):
         slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+        slider.setMinimumWidth(300)
         slider.setMinimum(min)
         slider.setMaximum(max)
+        slider.setSliderPosition(default)
+        return slider
 
 
 def getHBox():

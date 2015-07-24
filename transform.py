@@ -1,6 +1,9 @@
 import numpy as np
 import cv2
 
+RATIO_HEIGHT_WIDTH = 1.571929824561403
+
+
 def order_points(pts):
     # initialzie a list of coordinates that will be ordered
     # such that the first entry in the list is the top-left,
@@ -62,6 +65,34 @@ def four_point_transform(image, pts):
 
     # return the warped image
     return warped
+
+
+def postProcess(img, dilation, erosion):
+    # erosion
+    kernel = np.ones(erosion, np.uint8)
+    erodedImg = cv2.erode(img, kernel, iterations=1)
+    kernel2 = np.ones(dilation, np.uint8)
+    dilatedImg = cv2.dilate(erodedImg, kernel2, iterations=1)
+    return dilatedImg
+
+
+# mins = (bMin, gMin, rMin)
+# maxes = (bMax, gMax, rMax)
+def filter(hsvImg, mins, maxes):
+    medianImg = cv2.medianBlur(hsvImg, 5)
+    filtered_img = cv2.inRange(medianImg, mins, maxes)
+    return filtered_img
+
+
+def all_the_things(image, params):
+    cv2.imwrite('calibratergb.jpg', image)
+    warped_image = four_point_transform(image, params['pts'])
+    warped_image = cv2.resize(warped_image, (600, int(400*RATIO_HEIGHT_WIDTH)))
+    cv2.imwrite('warped.jpg', warped_image)
+    hsvImg = cv2.cvtColor(warped_image, cv2.COLOR_BGR2HSV)
+    filtered_image = filter(hsvImg, params['mins'], params['maxes'])
+    processed_image = postProcess(filtered_image, params['dilation'], params['erosion'])
+    return processed_image
 
 
 def bitmap_from_image(image):

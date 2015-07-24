@@ -20,7 +20,8 @@ class Loop(QtCore.QObject):
             if frame is None:
                 time.sleep(.25)
             else:
-                self.image_ready.emit(frame, transform.bitmap_from_image(frame))
+                params = main.getImageParams()
+                self.image_ready.emit(frame, transform.all_the_things(frame, params))
             time.sleep(.25)
 
 if __name__ == '__main__':

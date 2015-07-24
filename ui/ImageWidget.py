@@ -21,7 +21,8 @@ class ImageWidget(QtGui.QLabel):
         self.setScaledContents(True)
 
     def showCVImage(self, cvimage):
-        self.setPixmap(QtGui.QPixmap.fromImage(self.toQImage(cvimage)).scaled(self.size()))
+        qimg = self.toQImage(cvimage).scaled(self.size())
+        self.setPixmap(QtGui.QPixmap.fromImage(qimg))
 
     # toQImage implementation
     class NotImplementedException:
