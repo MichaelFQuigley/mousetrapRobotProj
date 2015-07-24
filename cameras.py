@@ -41,7 +41,8 @@ def read():
     if max_size is not None:
         h, w, c = frame.shape
         ratio = max_size / max(h, w)
-        frame = cv2.resize(frame, (int(w*ratio),int(h*ratio)), interpolation = cv2.INTER_AREA)
+        if ratio < 1:
+            frame = cv2.resize(frame, (int(w*ratio),int(h*ratio)), interpolation = cv2.INTER_AREA)
 
     return frame
 

@@ -35,7 +35,7 @@ class MainWindow(QtGui.QMainWindow):
         cameraMenu = menu.addMenu('Capture')
         for c in range(cameras.detected):
             a = QtGui.QAction('Camera %d' % c, self, checkable=True)
-            if c == 0:
+            if c == cameras.detected - 1:
                 a.setChecked(True)
             a.triggered.connect(partial(cameras.VideoCapture, c))
             cameraMenu.addAction(ag.addAction(a))
@@ -72,7 +72,6 @@ class MainWindow(QtGui.QMainWindow):
     def on_image_ready(self, orig, new):
         self.raw.setPixmap(as_pixmap(orig))
         self.processed.setPixmap(as_pixmap(new))
-        print self.processed.pixmap()
 
     def getImageParams(self):
         ret = {'mins': (self.slidersWidget.rMinSlider.value(),
