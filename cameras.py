@@ -11,14 +11,12 @@ def init(desired_size):
     global detected, max_size
     max_size = desired_size
     good = True
-    limit = 100;
-    while good & (limit < 100):
-        cap = cv2.VideoCapture()
+    while good:
+        cap = cv2.VideoCapture(detected)
         if cap.isOpened():
             detected = detected + 1
         else:
             good = False
-        limit += 1
         cap.release()
 
 

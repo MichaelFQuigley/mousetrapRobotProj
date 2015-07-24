@@ -22,7 +22,6 @@ class Loop(QtCore.QObject):
             else:
                 params = main.getImageParams()
                 self.image_ready.emit(frame, transform.all_the_things(frame, params))
-            time.sleep(.25)
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
