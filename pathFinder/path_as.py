@@ -27,7 +27,7 @@ class PathFinderAStar(PathFinder):
         return abs(dx) + abs(dy) # Manhattan distance
         #return dy * dy + dx * dx # Squared Euclidean distance
 
-    def get_path(self, origin, dest):
+    def get_path(self, origin, dest, weights = None):
 
         # Compute path costs
         q = PriorityQueue()
@@ -45,7 +45,8 @@ class PathFinderAStar(PathFinder):
 
             neighbors = self.get_neighbors(node[0], node[1])
             for n in neighbors:
-                step_cost = 1 # TODO: this may not be a constant (diagonals should be different)
+                #step_cost = 1 # TODO: this may not be a constant (diagonals should be different)
+                step_cost = (weights[n[0]][n[1]] if weights else 1)
                 new_cost = path_cost[node] + step_cost
                 if n not in path_cost or new_cost < path_cost[n]:
                     path_cost[n] = new_cost

@@ -123,7 +123,7 @@ class PathFinderDijkstra(PathFinder):
         print(currPath)
         return self.getDist(endPos), currPath
 
-    def get_path(self, origin, dest):
+    def get_path(self, origin, dest, weights = None):
         return self.getShortestPathIterative(origin, dest)
         
 

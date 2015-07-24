@@ -43,11 +43,16 @@ class PathFinder:
                             n.append((n_row, n_col))
         return n
 
-    def get_path(self, origin, dest):
+    def get_path(self, origin, dest, weights = None):
         """
         Returns a tuple, where the first element is the path length,
         and the second element is the path as a list of cells.
         Returns (float("inf"), []) if there is no path to the destination.
+
         Cells are (row, column) tuples.
+
+        The weights parameter is an array with the same dimmensions as the grid,
+        and with the cost of stepping on each free cell.
+        Some implementations may ignore this parameter.
         """
         pass
