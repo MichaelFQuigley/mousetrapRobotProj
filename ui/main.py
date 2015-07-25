@@ -1,13 +1,11 @@
 import cameras
 from PyQt4 import QtCore, QtGui
-from PIL import ImageQt
 import numpy as np
-from PIL import Image
 from functools import partial
 from os import path
 from SlidersWidget import SlidersWidget
-from PyQt4.Qt import QRect
 import cv2
+import SubQLabel
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -16,6 +14,11 @@ class MainWindow(QtGui.QMainWindow):
         self.slidersWidget = SlidersWidget(self)
         self.setWindowTitle('Mousetrap Navigator')
         self.setWindowIcon(QtGui.QIcon(path.join('img', 'mousetrap.png')))
+        self.top_left = (334, 87)
+        self.top_right = (707, 96)
+        self.bottom_right = (998, 535)
+        self.bottom_left = (46, 536)
+        self.initializing = True
 
         self.init_menubar()
         self.init_central_widget()
@@ -50,6 +53,7 @@ class MainWindow(QtGui.QMainWindow):
         initMenu.addAction(init)
         menu.addMenu(initMenu)
 
+
     def init_central_widget(self):
         widget = QtGui.QWidget()
         self.setCentralWidget(widget)
@@ -58,7 +62,7 @@ class MainWindow(QtGui.QMainWindow):
         hbox.addStretch(1)
         # hbox.addWidget(self.slidersWidget)
 
-        self.raw = QtGui.QLabel()
+        self.raw = SubQLabel.SubQLabel()
         hbox.addWidget(self.raw)
 
         self.processed = QtGui.QLabel()
@@ -70,7 +74,14 @@ class MainWindow(QtGui.QMainWindow):
         widget.setLayout(mainBox)
 
     def on_image_ready(self, orig, new):
-        self.raw.setPixmap(as_pixmap(orig))
+        orig_pixmap = as_pixmap(orig)
+        self.raw.setPixmap(orig_pixmap)
+        if self.initializing:
+            self.top_left = (0, 0)
+            self.top_right = (orig_pixmap.width() - 1, 0)
+            self.bottom_right = (orig_pixmap.width() - 1, orig_pixmap.height() - 1)
+            self.bottom_left = (0, orig_pixmap.height() - 1)
+            self.initializing = False
         self.processed.setPixmap(as_pixmap(new))
 
     def getImageParams(self):
@@ -85,7 +96,7 @@ class MainWindow(QtGui.QMainWindow):
                             self.slidersWidget.dxSlider.value()),
                'erosion': (self.slidersWidget.eySlider.value(),
                            self.slidersWidget.exSlider.value()),
-               'pts': np.array([(285, 285), (656, 275), (948, 616), (29, 660)], dtype="float32")
+               'pts': np.array([self.top_left, self.top_right, self.bottom_right, self.bottom_left], dtype="float32")
                }
         return ret
 
@@ -112,7 +123,7 @@ class popup(QtGui.QWidget):
         layout = QtGui.QGridLayout(self)
         layout.addWidget(widget)
         # adjust the margins or you will get an invisible, unintended border
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(10, 10, 10, 10)
         # need to set the layout
         self.setLayout(layout)
         self.adjustSize()
@@ -124,4 +135,4 @@ class popup(QtGui.QWidget):
         global_point = widget.mapToGlobal(point)
         # by default, a widget will be placed from its top-left corner, so
         # we need to move it to the left based on the widgets width
-        self.move(global_point - QtCore.QPoint(self.width(), 0))
+        # self.move(global_point - QtCore.QPoint(self.width(), 0))

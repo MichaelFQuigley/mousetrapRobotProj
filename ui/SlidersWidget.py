@@ -75,8 +75,6 @@ class SlidersWidget(QtGui.QWidget):
         vbox.addLayout(exBox, 8, 0)
         vbox.addLayout(eyBox, 9, 0)
 
-        vbox.setColumnMinimumWidth(200, 200)
-
         self.setLayout(vbox)
 
     def createSlider(self, min, max, default=0):
