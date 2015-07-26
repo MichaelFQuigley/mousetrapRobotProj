@@ -36,7 +36,7 @@ def get_dilation_kernel(grid):
     """
     grid_width = len(grid[0])
     grid_height = len(grid)
-    
+
     map_width = 9.0     # in feet
     map_height = 14.0   # in feet
 
@@ -47,7 +47,7 @@ def get_dilation_kernel(grid):
 
     print "kernel width:", kernel_width
     print "kernel height:", kernel_height
-    
+
     return np.ones((kernel_height, kernel_width), np.uint8)
 
 def dilate_map(grid):
@@ -74,7 +74,7 @@ def get_neighbors(row, col, height, width):
         return n
 
 def compute_map_weights(the_map):
-                        
+
     m = np.copy(the_map) # distance from obstacles
     h = len(the_map)
     w = len(the_map[0])
@@ -139,7 +139,7 @@ def path_test():
     # Draw path on image
     for cell in robot_path:
         img[cell[0]][cell[1]] = [0, 0, 255] # BGR
-    
+
     display_image("Map", the_map)
     display_image("Dilation", dilated_map)
     display_image("Weights", weights)

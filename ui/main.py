@@ -6,6 +6,7 @@ from functools import partial
 from os import path
 from sliders import SlidersDialog
 import cv2
+import SubQLabel
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
@@ -13,6 +14,11 @@ class MainWindow(QtGui.QMainWindow):
         self.sliders = SlidersDialog(self)
         self.setWindowTitle('Mousetrap Navigator')
         self.setWindowIcon(QtGui.QIcon(path.join('img', 'mousetrap.png')))
+        self.top_left = (334, 87)
+        self.top_right = (707, 96)
+        self.bottom_right = (998, 535)
+        self.bottom_left = (46, 536)
+        self.initializing = True
 
         self.init_menubar()
         self.init_central_widget()
@@ -47,6 +53,7 @@ class MainWindow(QtGui.QMainWindow):
         initMenu.addAction(init)
         menu.addMenu(initMenu)
 
+
     def init_central_widget(self):
         widget = QtGui.QWidget()
         self.setCentralWidget(widget)
@@ -54,7 +61,7 @@ class MainWindow(QtGui.QMainWindow):
         hbox = QtGui.QHBoxLayout()
         hbox.addStretch(1)
 
-        self.raw = QtGui.QLabel()
+        self.raw = SubQLabel.SubQLabel()
         hbox.addWidget(self.raw)
 
         self.processed = QtGui.QLabel()
@@ -66,7 +73,14 @@ class MainWindow(QtGui.QMainWindow):
         widget.setLayout(mainBox)
 
     def on_image_ready(self, orig, new):
-        self.raw.setPixmap(as_pixmap(orig))
+        orig_pixmap = as_pixmap(orig)
+        self.raw.setPixmap(orig_pixmap)
+        if self.initializing:
+            self.top_left = (0, 0)
+            self.top_right = (orig_pixmap.width() - 1, 0)
+            self.bottom_right = (orig_pixmap.width() - 1, orig_pixmap.height() - 1)
+            self.bottom_left = (0, orig_pixmap.height() - 1)
+            self.initializing = False
         self.processed.setPixmap(as_pixmap(new))
 
     @QtCore.pyqtSlot()
