@@ -9,6 +9,7 @@ import sys
 from os import path
 from PyQt4 import QtCore, QtGui
 import time
+import settings
 
 class Loop(QtCore.QObject):
     image_ready = QtCore.pyqtSignal(object, object)
@@ -20,12 +21,12 @@ class Loop(QtCore.QObject):
             if frame is None:
                 time.sleep(.25)
             else:
-                params = main.getImageParams()
-                self.image_ready.emit(frame, transform.all_the_things(frame, params))
+                self.image_ready.emit(frame, transform.all_the_things(frame))
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    cameras.init(1024)
+    cameras.init()
+    print cameras.detected
     if cameras.detected > 0:
         cameras.VideoCapture(cameras.detected-1)
     else:

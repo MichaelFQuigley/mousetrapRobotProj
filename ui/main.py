@@ -1,19 +1,16 @@
 import cameras
 from PyQt4 import QtCore, QtGui
-from PIL import ImageQt
+from PIL import Image, ImageQt
 import numpy as np
-from PIL import Image
 from functools import partial
 from os import path
-from SlidersWidget import SlidersWidget
-from PyQt4.Qt import QRect
+from sliders import SlidersDialog
 import cv2
-
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.slidersWidget = SlidersWidget(self)
+        self.sliders = SlidersDialog(self)
         self.setWindowTitle('Mousetrap Navigator')
         self.setWindowIcon(QtGui.QIcon(path.join('img', 'mousetrap.png')))
 
@@ -56,7 +53,6 @@ class MainWindow(QtGui.QMainWindow):
 
         hbox = QtGui.QHBoxLayout()
         hbox.addStretch(1)
-        # hbox.addWidget(self.slidersWidget)
 
         self.raw = QtGui.QLabel()
         hbox.addWidget(self.raw)
@@ -73,26 +69,9 @@ class MainWindow(QtGui.QMainWindow):
         self.raw.setPixmap(as_pixmap(orig))
         self.processed.setPixmap(as_pixmap(new))
 
-    def getImageParams(self):
-        ret = {'mins': (self.slidersWidget.rMinSlider.value(),
-                        self.slidersWidget.gMinSlider.value(),
-                        self.slidersWidget.bMinSlider.value()),
-               'maxes': (self.slidersWidget.rMaxSlider.value(),
-                         self.slidersWidget.gMaxSlider.value(),
-                         self.slidersWidget.bMaxSlider.value()),
-               'blur': 0,
-               'dilation': (self.slidersWidget.dySlider.value(),
-                            self.slidersWidget.dxSlider.value()),
-               'erosion': (self.slidersWidget.eySlider.value(),
-                           self.slidersWidget.exSlider.value()),
-               'pts': np.array([(285, 285), (656, 275), (948, 616), (29, 660)], dtype="float32")
-               }
-        return ret
-
+    @QtCore.pyqtSlot()
     def show_sliders(self):
-        self.popup = popup(self, self.slidersWidget)
-        self.popup.show()
-
+        self.sliders.exec_()
 
 def as_pixmap(frame):
     gray = False
@@ -104,24 +83,3 @@ def as_pixmap(frame):
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     qt_image = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_RGB888)
     return QtGui.QPixmap.fromImage(qt_image)
-
-
-class popup(QtGui.QWidget):
-    def __init__(self, parent = None, widget=None):
-        QtGui.QWidget.__init__(self, parent)
-        layout = QtGui.QGridLayout(self)
-        layout.addWidget(widget)
-        # adjust the margins or you will get an invisible, unintended border
-        layout.setContentsMargins(0, 0, 0, 0)
-        # need to set the layout
-        self.setLayout(layout)
-        self.adjustSize()
-        # tag this widget as a popup
-        self.setWindowFlags(QtCore.Qt.Popup)
-        # calculate the botoom right point from the parents rectangle
-        point = widget.rect().bottomRight()
-        # map that point as a global position
-        global_point = widget.mapToGlobal(point)
-        # by default, a widget will be placed from its top-left corner, so
-        # we need to move it to the left based on the widgets width
-        self.move(global_point - QtCore.QPoint(self.width(), 0))
