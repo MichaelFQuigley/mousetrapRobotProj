@@ -11,6 +11,7 @@ import SubQLabel
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+        self.imageParams = {}
         self.slidersWidget = SlidersWidget(self)
         self.setWindowTitle('Mousetrap Navigator')
         self.setWindowIcon(QtGui.QIcon(path.join('img', 'mousetrap.png')))
@@ -18,6 +19,7 @@ class MainWindow(QtGui.QMainWindow):
         self.top_right = (707, 96)
         self.bottom_right = (998, 535)
         self.bottom_left = (46, 536)
+        self.calibration_corner = 0
         self.initializing = True
 
         self.init_menubar()
@@ -85,24 +87,43 @@ class MainWindow(QtGui.QMainWindow):
         self.processed.setPixmap(as_pixmap(new))
 
     def getImageParams(self):
-        ret = {'mins': (self.slidersWidget.rMinSlider.value(),
-                        self.slidersWidget.gMinSlider.value(),
-                        self.slidersWidget.bMinSlider.value()),
-               'maxes': (self.slidersWidget.rMaxSlider.value(),
-                         self.slidersWidget.gMaxSlider.value(),
-                         self.slidersWidget.bMaxSlider.value()),
-               'blur': 0,
-               'dilation': (self.slidersWidget.dySlider.value(),
-                            self.slidersWidget.dxSlider.value()),
-               'erosion': (self.slidersWidget.eySlider.value(),
-                           self.slidersWidget.exSlider.value()),
-               'pts': np.array([self.top_left, self.top_right, self.bottom_right, self.bottom_left], dtype="float32")
+        self.imageParams = {'mins': (self.slidersWidget.rMinSlider.value(),
+                                     self.slidersWidget.gMinSlider.value(),
+                                     self.slidersWidget.bMinSlider.value()),
+                            'maxes': (self.slidersWidget.rMaxSlider.value(),
+                                      self.slidersWidget.gMaxSlider.value(),
+                                      self.slidersWidget.bMaxSlider.value()),
+                            'blur': 0,
+                            'dilation': (self.slidersWidget.dySlider.value(),
+                                         self.slidersWidget.dxSlider.value()),
+                            'erosion': (self.slidersWidget.eySlider.value(),
+                                        self.slidersWidget.exSlider.value()),
+                            'pts': np.array([self.top_left, self.top_right,
+                                             self.bottom_right, self.bottom_left], dtype="float32")
                }
-        return ret
+        return self.imageParams
 
     def show_sliders(self):
         self.popup = popup(self, self.slidersWidget)
         self.popup.show()
+
+    # sets a corner point for image translation. cycles through points
+    @QtCore.pyqtSlot(int, int)
+    def points_changed(self, x, y):
+        print "Setting Points..."
+        self.calibration_corner %= 4
+        c = self.calibration_corner
+        print "c = {}".format(c)
+        if c == 0:
+            self.top_left = (x, y)
+        elif c == 1:
+            self.top_right = (x, y)
+        elif c == 2:
+            self.bottom_right = (x, y)
+        elif c == 3:
+            self.bottom_left = (x, y)
+        self.calibration_corner += 1
+        print "points are now {}".format(self.getImageParams()['pts'])
 
 
 def as_pixmap(frame):

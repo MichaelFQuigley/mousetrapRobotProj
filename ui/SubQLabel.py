@@ -1,7 +1,11 @@
 from PyQt4 import QtGui, QtCore, Qt
+import main
 
 
 class SubQLabel(QtGui.QLabel):
+
+    set_point = QtCore.pyqtSignal(int, int)
+
     def __init__(self):
         super(SubQLabel, self).__init__()
         self.imageWidth = 1
@@ -19,9 +23,9 @@ class SubQLabel(QtGui.QLabel):
 
         if e.button() == QtCore.Qt.LeftButton:
             print("Image clicked at pos: ({}, {}).".format(x_img, y_img))
-        elif e.button() == QtCore.Qt.MiddleButton:
-            # TODO: make it fire an event, passing in the position
-            pass
+        elif e.button() == QtCore.Qt.RightButton:
+            self.set_point.emit(x_img, y_img)
+            self.calibration_pos += 1
 
 
     def setPixmap(self, pixmap):

@@ -31,6 +31,7 @@ if __name__ == '__main__':
     else:
         cameras.VideoCapture(path.join('img', 'mousetraps.jpg'))
     main = ui.MainWindow()
+    main.raw.set_point.connect(main.points_changed)
     thread = QtCore.QThread()
     work = Loop()
     work.image_ready.connect(main.on_image_ready)
