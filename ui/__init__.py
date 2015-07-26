@@ -1,2 +1,2 @@
 from main import MainWindow
-from SlidersWidget import SlidersWidget
+from sliders import SlidersDialog

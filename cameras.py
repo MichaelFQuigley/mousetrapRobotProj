@@ -1,15 +1,14 @@
 from __future__ import division
 import cv2
+from settings import settings
 
 selected = -1
 detected = 0
 cap = None
 last = None
-max_size = None
 
-def init(desired_size):
-    global detected, max_size
-    max_size = desired_size
+def init():
+    global detected
     good = True
     while good:
         cap = cv2.VideoCapture(detected)
@@ -33,14 +32,13 @@ def VideoCapture(ind):
     return cap
 
 def read():
-    global max_size
     frame = read_frame()
     if frame is None:
         return None
 
-    if max_size is not None:
+    if settings.image_height is not None:
         h, w, c = frame.shape
-        ratio = max_size / max(h, w)
+        ratio = settings.image_height / max(h, w)
         if ratio < 1:
             frame = cv2.resize(frame, (int(w*ratio),int(h*ratio)), interpolation = cv2.INTER_AREA)
 

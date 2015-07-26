@@ -1,10 +1,11 @@
 import numpy as np
 import cv2
+from settings import settings
 
 RATIO_HEIGHT_WIDTH = 1.571929824561403
 
-
 def four_point_transform(image, pts):
+
     # compute the width of the new image, which will be the
     # maximum distance between bottom-right and bottom-left
     # x-coordiates or the top-right and top-left x-coordinates
@@ -50,21 +51,23 @@ def postProcess(img, dilation, erosion):
 # mins = (bMin, gMin, rMin)
 # maxes = (bMax, gMax, rMax)
 def filter(hsvImg, mins, maxes):
-    medianImg = cv2.medianBlur(hsvImg, 5)
-    filtered_img = cv2.inRange(medianImg, mins, maxes)
+    # medianImg = cv2.medianBlur(hsvImg, 0)
+    filtered_img = cv2.inRange(hsvImg, mins, maxes)
     return filtered_img
 
 
-def all_the_things(image, params):
-    cv2.imwrite('calibratergb.jpg', image)
-    warped_image = four_point_transform(image, params['pts'])
-    warped_image = cv2.resize(warped_image, (600, int(600*RATIO_HEIGHT_WIDTH)))
-    cv2.imwrite('warped.jpg', warped_image)
+def all_the_things(image):
+    # cv2.imwrite('calibratergb.jpg', image)
+    warped_image = four_point_transform(image, np.array([settings.top_left, settings.top_right, settings.bottom_right,
+                                                         settings.bottom_left], np.float32))
+    warped_image = cv2.resize(warped_image, (settings.image_height, int(settings.image_height*RATIO_HEIGHT_WIDTH)))
+    # cv2.imwrite('warped.jpg', warped_image)
     hsvImg = cv2.cvtColor(warped_image, cv2.COLOR_BGR2HSV)
-    filtered_image = filter(hsvImg, params['mins'], params['maxes'])
-    processed_image = postProcess(filtered_image, params['dilation'], params['erosion'])
+    filtered_image = filter(hsvImg,
+                            (settings.rMin, settings.gMin, settings.bMin),
+                            (settings.rMax, settings.gMax, settings.bMax))
+    processed_image = postProcess(filtered_image, (settings.dy, settings.dx), (settings.ey, settings.ex))
     return processed_image
-
 
 def bitmap_from_image(image):
     return cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)[1]
