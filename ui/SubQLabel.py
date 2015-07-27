@@ -4,7 +4,8 @@ import main
 
 class SubQLabel(QtGui.QLabel):
 
-    set_point = QtCore.pyqtSignal(int, int)
+    left_click = QtCore.pyqtSignal(int, int)
+    right_click = QtCore.pyqtSignal(int, int)
 
     def __init__(self):
         super(SubQLabel, self).__init__()
@@ -22,7 +23,7 @@ class SubQLabel(QtGui.QLabel):
         y_img = y - (hdiff / 2)
 
         if e.button() == QtCore.Qt.LeftButton:
-            print("Image clicked at pos: ({}, {}).".format(x_img, y_img))
+            self.left_click.emit(x_img, y_img)
         elif e.button() == QtCore.Qt.RightButton:
             self.set_point.emit(x_img, y_img)
             self.calibration_pos += 1
