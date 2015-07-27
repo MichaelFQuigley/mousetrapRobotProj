@@ -103,9 +103,6 @@ class PathFinderUI:
 
         self.draw_path(path)
         self.highlight_visited(path_finder.instance.get_visited())
-
-        
-        
         
         #self.gridPrettyPrint()
         #pathFinder.prettyPrintNodesTraversed()

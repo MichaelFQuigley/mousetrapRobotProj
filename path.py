@@ -3,6 +3,7 @@ from __future__ import division
 import cv2
 import numpy as np
 import cameras
+import time
 
 from os import path
 from Queue import Queue
@@ -36,7 +37,7 @@ def get_dilation_kernel(grid):
     """
     grid_width = len(grid[0])
     grid_height = len(grid)
-
+    
     map_width = 9.0     # in feet
     map_height = 14.0   # in feet
 
@@ -47,7 +48,7 @@ def get_dilation_kernel(grid):
 
     print "kernel width:", kernel_width
     print "kernel height:", kernel_height
-
+    
     return np.ones((kernel_height, kernel_width), np.uint8)
 
 def dilate_map(grid):
@@ -57,62 +58,60 @@ def dilate_map(grid):
     kernel = get_dilation_kernel(grid)
     return cv2.dilate(grid, kernel, iterations = 1)
 
+neighbor_cords_8 = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+neighbor_cords_4 = [(-1, 0), (0, -1), (0, 1), (1, 0)]
 
 def get_neighbors(row, col, height, width):
         """
-        Get 8-adjacent neighbors.
+        Get adjacent neighbors.
         """
-        n = []
-        for r in [-1, 0, 1]:
-            for c in [-1, 0, 1]:
-                if r != 0 or c != 0:
-                    n_row = row + r
-                    n_col = col + c
-                    if n_row >= 0 and n_row < height and n_col >= 0 and n_col < width:
-                        # TODO: ignore blocked cells?
-                        n.append((n_row, n_col))
-        return n
+        neighbors = []
+        for r, c in neighbor_cords_4:
+            n_row = row + r
+            n_col = col + c
+            if n_row >= 0 and n_row < height and n_col >= 0 and n_col < width:
+                neighbors.append((n_row, n_col))
+        return neighbors
 
 def compute_map_weights(the_map):
+                        
+    h, w = the_map.shape
+    print "map size:", the_map.shape
 
-    m = np.copy(the_map) # distance from obstacles
-    h = len(the_map)
-    w = len(the_map[0])
+    dist = np.zeros(the_map.shape, dtype = np.uint) # distance from obstacles
 
-    print "map size:", h, w
-
+    # Start with all locations next to an obstacle
     border = set([])
     for row in range(h):
         for col in range(w):
-            if m[row][col] != 255:
+            if the_map[row][col] == 0:
                 for n in get_neighbors(row, col, h, w):
-                    if m[n[0]][n[1]] != 0:
+                    if the_map[n[0]][n[1]] != 0 and dist[n[0]][n[1]] == 0:
+                        dist[n[0]][n[1]] = 1
                         border.add(n)
-    for row, col in border:
-        m[row][col] = 1
-
-    q = Queue()
+    frontier = Queue()
     for x in border:
-        q.put(x)
+        frontier.put(x)
 
-    max_value = 0
-    while not q.empty():
-        row, col = q.get()
+    # Compute distance to obstacles for all free locations
+    max_dist = 0
+    while not frontier.empty():
+        row, col = frontier.get()
         for n in get_neighbors(row, col, h, w):
-            if m[n[0]][n[1]] == 0:
-                value = m[row][col] + 1
-                m[n[0]][n[1]] = value
-                if value > max_value:
-                    max_value = value
-                q.put(n)
+            if the_map[n[0]][n[1]] == 0 and dist[n[0]][n[1]] == 0:
+                d = dist[row][col] + 1
+                dist[n[0]][n[1]] = d
+                if d > max_dist:
+                    max_dist = d
+                frontier.put(n)
 
-    print "max value:", max_value
+    print("max distance: " + str(max_dist))
 
-    weights = np.copy(the_map) # weights
+    # Determine weights from distances (scaled to [0, 255])
+    weights = np.copy(the_map)
     for row in range(h):
         for col in range(w):
-            if weights[row][col] == 0:
-                weights[row][col] = int(-255.0 / float(max_value) * m[row][col] + 255)
+            weights[row][col] = int( 255 - 255 * dist[row][col] // max_dist )
 
     return weights
 
@@ -131,17 +130,32 @@ def path_test():
     origin = (h // 7 // 2, w // 3 // 2 * 5)
     dest = (h // 7 // 2 * 13, w // 3 // 2 * 3)
 
+    print "dilating..."
+    start_time = time.time()
     dilated_map = dilate_map(the_map)
+    end_time = time.time()
+    print("Elapsed time: " + str(end_time - start_time))
+
+    print "computing weights..."
+    start_time = time.time()
     weights = compute_map_weights(dilated_map)
+    end_time = time.time()
+    print("Elapsed time: " + str(end_time - start_time))
 
+    print "computing path..."
+    start_time = time.time()
     path_length, robot_path = pathFinder.find_path(dilated_map, origin, dest, weights)
+    end_time = time.time()
+    print("Elapsed time: " + str(end_time - start_time))
 
+    print "done!"
+    
     # Draw path on image
     for cell in robot_path:
         img[cell[0]][cell[1]] = [0, 0, 255] # BGR
-
-    display_image("Map", the_map)
-    display_image("Dilation", dilated_map)
+    
+    #display_image("Map", the_map)
+    #display_image("Dilation", dilated_map)
     display_image("Weights", weights)
     display_image("Path", img)
 

@@ -24,7 +24,6 @@ def set_type(t):
 def find_path(grid, origin, dest, weights=None):
     global solver, instance
     instance = solver(grid)
-    print "instance", instance
     return instance.get_path(origin, dest, weights)
 
 set_type('AStar')
