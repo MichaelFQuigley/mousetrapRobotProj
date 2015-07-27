@@ -1,6 +1,6 @@
 from __future__ import division
 import cv2
-from settings import settings
+import settings
 
 selected = -1
 detected = 0

@@ -1,6 +1,7 @@
 #! /usr/bin/python
 
 from __future__ import division
+
 import cv2
 import cameras
 import transform
@@ -21,7 +22,7 @@ class Loop(QtCore.QObject):
             if frame is None:
                 time.sleep(.25)
             else:
-                self.image_ready.emit(frame, transform.all_the_things(frame))
+                self.image_ready.emit(frame, transform.raw_to_map(frame, settings.get_map('maze')))
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
@@ -32,7 +33,9 @@ if __name__ == '__main__':
     else:
         cameras.VideoCapture(path.join('img', 'mousetraps.jpg'))
     main = ui.MainWindow()
-    main.raw.set_point.connect(main.points_changed)
+    main.raw.right_click.connect(main.points_changed)
+    main.processed.left_click.connect(main.set_bot_pos)
+    main.processed.right_click.connect(main.set_goal_pos)
     thread = QtCore.QThread()
     work = Loop()
     work.image_ready.connect(main.on_image_ready)

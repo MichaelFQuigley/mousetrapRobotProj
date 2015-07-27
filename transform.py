@@ -1,6 +1,7 @@
+from PyQt4 import QtGui
 import numpy as np
 import cv2
-from settings import settings
+import settings
 
 RATIO_HEIGHT_WIDTH = 1.571929824561403
 
@@ -56,18 +57,32 @@ def filter(hsvImg, mins, maxes):
     return filtered_img
 
 
-def all_the_things(image):
+def raw_to_map(image, purpose):
     # cv2.imwrite('calibratergb.jpg', image)
-    warped_image = four_point_transform(image, np.array([settings.top_left, settings.top_right, settings.bottom_right,
-                                                         settings.bottom_left], np.float32))
+    warped_image = four_point_transform(image, np.array([purpose['top_left'], purpose['top_right'],
+                                                         purpose['bottom_right'],
+                                                         purpose['bottom_left']], np.float32))
     warped_image = cv2.resize(warped_image, (settings.image_height, int(settings.image_height*RATIO_HEIGHT_WIDTH)))
     # cv2.imwrite('warped.jpg', warped_image)
     hsvImg = cv2.cvtColor(warped_image, cv2.COLOR_BGR2HSV)
     filtered_image = filter(hsvImg,
-                            (settings.rMin, settings.gMin, settings.bMin),
-                            (settings.rMax, settings.gMax, settings.bMax))
-    processed_image = postProcess(filtered_image, (settings.dy, settings.dx), (settings.ey, settings.ex))
+                            (purpose['rMin'], purpose['gMin'], purpose['bMin']),
+                            (purpose['rMax'], purpose['gMax'], purpose['bMax']))
+    processed_image = postProcess(filtered_image,
+                                  (purpose['dy'], purpose['dx']),
+                                  (purpose['ey'], purpose['ex']))
     return processed_image
 
 def bitmap_from_image(image):
     return cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)[1]
+
+def as_pixmap(frame):
+    gray = False
+    if len(frame.shape) == 2:
+        gray = True
+    if gray:
+        img = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
+    else:
+        img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    qt_image = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_RGB888)
+    return QtGui.QPixmap.fromImage(qt_image)

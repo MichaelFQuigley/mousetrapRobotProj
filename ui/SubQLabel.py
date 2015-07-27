@@ -12,7 +12,6 @@ class SubQLabel(QtGui.QLabel):
         self.imageWidth = 1
         self.imageHeight = 1
         self.calibration = ((), (), (), ())
-        self.calibration_pos = 0
 
     def mousePressEvent(self, e):
         x = e.x()
@@ -25,8 +24,7 @@ class SubQLabel(QtGui.QLabel):
         if e.button() == QtCore.Qt.LeftButton:
             self.left_click.emit(x_img, y_img)
         elif e.button() == QtCore.Qt.RightButton:
-            self.set_point.emit(x_img, y_img)
-            self.calibration_pos += 1
+            self.right_click.emit(x_img, y_img)
 
 
     def setPixmap(self, pixmap):

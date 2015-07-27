@@ -1,30 +1,39 @@
 """Common settings for application and testing"""
 import numpy as np
 
-class Settings():
-    def __init__(self):
-        self.image_height = 600
+image_height = 600
+maze = {}
+bot = {}
 
-        #Defaults for map
-        self.ey   =  1
-        self.ex   =  1
-        self.dy   =  1
-        self.dx   =  1
-        self.rMin =  0
-        self.rMax =  255
-        self.gMin =  0
-        self.gMax =  255
-        self.bMin =  100
-        self.bMax =  255
-        self.top_left = (195, 53)
-        self.top_right = (416, 54)
-        self.bottom_right = (585, 312)
-        self.bottom_left = (23, 316)
+#defaults for map
+maze['ey'] = 1
+maze['ex'] = 1
+maze['dy'] = 1
+maze['dx'] = 1
+maze['rMin'] = 0
+maze['rMax'] = 255
+maze['gMin'] = 0
+maze['gMax'] = 255
+maze['bMin'] = 100
+maze['bMax'] = 255
+maze['top_left'] = (195, 53)
+maze['top_right'] = (416, 54)
+maze['bottom_right'] = (585, 312)
+maze['bottom_left'] = (23, 316)
 
-    def __getitem__(self, item):
-        return self.__dict__[item]
+#defaults for bot
+bot['bot_position'] = (0, 0)
+bot['goal_position'] = (1, 1)
+bot['ey'] = 1
+bot['ex'] = 1
+bot['dy'] = 1
+bot['dx'] = 1
+bot['rMin'] = 0
+bot['rMax'] = 255
+bot['gMin'] = 0
+bot['gMax'] = 255
+bot['bMin'] = 100
+bot['bMax'] = 255
 
-    def __setitem__(self, item, value):
-        self.__dict__[item] = value
-
-settings = Settings()
+def get_map(name):
+    return maze if name == 'maze' else bot
