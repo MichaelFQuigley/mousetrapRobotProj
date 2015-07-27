@@ -8,7 +8,7 @@ import cv2
 from SubQLabel import SubQLabel
 import settings
 import path as pth
-from transform import as_pixmap
+from transform import as_pixmap, resize_image
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -71,35 +71,35 @@ class MainWindow(QtGui.QMainWindow):
         widget = QtGui.QWidget()
         self.setCentralWidget(widget)
 
-        hbox = QtGui.QHBoxLayout()
-        hbox.addStretch(1)
+        grid = QtGui.QGridLayout()
+        grid.setColumnStretch(0, 2)
+        grid.setColumnStretch(1, 1)
 
-        hbox.addWidget(self.raw)
+        grid.addWidget(self.raw, 0, 0)
 
-        hbox.addWidget(self.processed)
+        grid.addWidget(self.processed, 0, 1)
 
         main_box = QtGui.QHBoxLayout()
-        main_box.addStretch(1)
-        main_box.addLayout(hbox)
+        main_box.addLayout(grid)
         widget.setLayout(main_box)
 
     def on_image_ready(self, orig, new):
         orig_pixmap = as_pixmap(orig)
         self.raw.setPixmap(orig_pixmap)
         if self.initializing:
-            settings.maze['top_left'] = (0, 0)
-            settings.maze['top_right'] = (orig_pixmap.width() - 1, 0)
-            settings.maze['bottom_right'] = (orig_pixmap.width() - 1, orig_pixmap.height() - 1)
-            settings.maze['bottom_left'] = (0, orig_pixmap.height() - 1)
+            for key in settings.bot, settings.maze:
+                key['top_left'] = (0, 0)
+                key['top_right'] = (orig_pixmap.width() - 1, 0)
+                key['bottom_right'] = (orig_pixmap.width() - 1, orig_pixmap.height() - 1)
+                key['bottom_left'] = (0, orig_pixmap.height() - 1)
+
             self.initializing = False
         self.processed.setPixmap(as_pixmap(new))
 
-    @QtCore.pyqtSlot(int, int)
     def set_bot_pos(self, x, y):
         print "set_bot_pos called with ({}, {})".format(x, y)
         settings.bot_position = (x, y)
 
-    @QtCore.pyqtSlot(int, int)
     def set_goal_pos(self, x, y):
         print "set_goal_pos called with ({}, {})".format(x, y)
         settings.goal_position = (x, y)
@@ -107,16 +107,13 @@ class MainWindow(QtGui.QMainWindow):
 
     @QtCore.pyqtSlot()
     def show_map_sliders(self):
-        self.map_sliders.set_raw(cameras.last)
         self.map_sliders.exec_()
 
     @QtCore.pyqtSlot()
     def show_bot_sliders(self):
-        self.bot_sliders.set_raw(cameras.last)
         self.bot_sliders.exec_()
 
     # sets a corner point for image translation. cycles through points
-    @QtCore.pyqtSlot(int, int)
     def points_changed(self, x, y):
         self.calibration_corner %= 4
         c = self.calibration_corner

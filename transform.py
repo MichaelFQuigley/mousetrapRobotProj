@@ -66,11 +66,12 @@ def raw_to_map(image, purpose):
     # cv2.imwrite('warped.jpg', warped_image)
     hsvImg = cv2.cvtColor(warped_image, cv2.COLOR_BGR2HSV)
     filtered_image = filter(hsvImg,
-                            (purpose['rMin'], purpose['gMin'], purpose['bMin']),
-                            (purpose['rMax'], purpose['gMax'], purpose['bMax']))
+                            (purpose['hMin'], purpose['sMin'], purpose['vMin']),
+                            (purpose['hMax'], purpose['sMax'], purpose['vMax']))
     processed_image = postProcess(filtered_image,
                                   (purpose['dy'], purpose['dx']),
                                   (purpose['ey'], purpose['ex']))
+    cv2.imwrite('processed.jpg', processed_image)
     return processed_image
 
 def bitmap_from_image(image):
@@ -86,3 +87,14 @@ def as_pixmap(frame):
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     qt_image = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_RGB888)
     return QtGui.QPixmap.fromImage(qt_image)
+
+
+def resize_image(image):
+    if settings.image_height is not None:
+        h, w, c = image.shape
+        ratio = settings.image_height / max(h, w)
+        if ratio < 1:
+            return cv2.resize(image, (int(w * ratio), int(h * ratio)), interpolation=cv2.INTER_AREA)
+
+    return image
+
