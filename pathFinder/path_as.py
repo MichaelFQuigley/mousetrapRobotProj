@@ -16,7 +16,7 @@ class PathFinderAStar(PathFinder):
     See: http://www.redblobgames.com/pathfinding/a-star/introduction.html
     """
     def __init__(self, grid):
-        PathFinder.__init__(self, grid)
+        super(PathFinderAStar, self).__init__(grid)
 
     def heuristic(self, dest, node):
         """
@@ -67,9 +67,11 @@ class PathFinderAStar(PathFinder):
             path.append(node)
         path.reverse()
 
-        self.visited = path_cost  # temporary, for the UI
+        self.visited = path_cost.keys() # Save visited nodes
         return path_length, path
 
+    def get_visited(self):
+        return self.visited
 
 #Simple test...
 def run_test():

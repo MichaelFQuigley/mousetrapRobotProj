@@ -15,9 +15,9 @@ class PathFinderBFS(PathFinder):
     Breath First Search path finder.
     """
     def __init__(self, grid):
-        PathFinder.__init__(self, grid)
+        super(PathFinderBFS, self).__init__(grid)
 
-    def get_path(self, origin, dest):
+    def get_path(self, origin, dest, weights = None):
         """
         Compute path using BFS.
         """
@@ -59,7 +59,18 @@ class PathFinderBFS(PathFinder):
                     break
         path.reverse()
 
+        self.visited = visited
         return path_length, path
+
+    def get_visited(self):
+        print "visited nodes"
+        visited = None
+        if self.visited:
+            visited = set([])
+            for row in range(self._grid_height):
+                for col in range(self._grid_width):
+                    visited.add((row, col))
+        return visited
 
 
 #Simple test...

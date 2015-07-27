@@ -8,6 +8,11 @@ import time
 
 from path_bfs import PathFinderBFS
 from path_as import PathFinderAStar
+import __init__ as path_finder
+
+
+path_finder.set_type("AStar")
+
 
 class PathFinderUI:
 
@@ -15,8 +20,9 @@ class PathFinderUI:
         self.tk       = Tk()
         self.rows_num = rows_num
         self.cols_num = cols_num
-        self.tiles    = [[None for _ in range(cols_num)] for _ in range(rows_num)]          # Obstacle tiles
+        self.tiles         = [[None for _ in range(cols_num)] for _ in range(rows_num)]     # Obstacle tiles
         self.path_tiles    = [[None for _ in range(cols_num)] for _ in range(rows_num)]     # Path tiles
+        self.visited_tiles = [[None for _ in range(cols_num)] for _ in range(rows_num)]     # Tiles visited by path finder algorithm
         self.fWidth   = 800
         self.fHeight  = 800
         self.canvas   = Canvas(self.tk, width=self.fWidth, height=self.fHeight, borderwidth=5, background='white')
@@ -60,12 +66,24 @@ class PathFinderUI:
             if not self.path_tiles[row_ind][col_ind]:
                 self.path_tiles[row_ind][col_ind] = self.create_rectangle(row_ind, col_ind, "red")
 
+    # Highlight visited nodes
+    def highlight_visited(self, visited):
+        if visited:
+            for row, col in visited:
+                if not self.path_tiles[row][col]:
+                    self.visited_tiles[row][col] = self.create_rectangle(row, col, "yellow")
+    
     def reset_path(self):
         for row_ind in range(self.rows_num):
             for col_ind in range(self.cols_num):
+                # Path
                 if self.path_tiles[row_ind][col_ind]:
                     self.canvas.delete(self.path_tiles[row_ind][col_ind])
                     self.path_tiles[row_ind][col_ind] = None
+                # Visited
+                if self.visited_tiles[row_ind][col_ind]:
+                    self.canvas.delete(self.visited_tiles[row_ind][col_ind])
+                    self.visited_tiles[row_ind][col_ind] = None
 
       
     def submit(self):
@@ -75,10 +93,8 @@ class PathFinderUI:
         dest = (self.cols_num - 1, self.rows_num - 1)
 
         startTime = time.time()
-        #path_finder = PathFinderDijkstra(grid)
-        #path_finder = PathFinderBFS(grid)
-        path_finder = PathFinderAStar(grid)
-        path_length, path = path_finder.get_path(origin, dest)
+        path_length, path = path_finder.find_path(grid, origin, dest)
+        
         endTime = time.time()
 
         print("Time elapsed: " + str(endTime - startTime))
@@ -86,20 +102,10 @@ class PathFinderUI:
         #print("Path: " + str(path))
 
         self.draw_path(path)
+        self.highlight_visited(path_finder.instance.get_visited())
 
-        # Temporary hack to highlight visited nodes
-        if path_finder.visited:
-            for cell in path_finder.visited:
-                row = cell[0]
-                col = cell[1]
-                if not self.path_tiles[row][col]:
-                    self.path_tiles[row][col] = self.create_rectangle(row, col, "yellow")
-##            for row in range(self.rows_num):
-##                for col in range(self.cols_num):
-##                    if (path_finder.visited[row][col]):
-##                        if not self.path_tiles[row][col]:
-##                            self.path_tiles[row][col] = self.create_rectangle(row, col, "yellow")
-            
+        
+        
         
         #self.gridPrettyPrint()
         #pathFinder.prettyPrintNodesTraversed()
