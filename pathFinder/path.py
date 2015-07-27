@@ -1,6 +1,6 @@
 from copy import copy
 
-class PathFinder:
+class PathFinder(object):
     """
     Base class for different path finding implementations.
     Override get_path in subclasses.
@@ -54,5 +54,12 @@ class PathFinder:
         The weights parameter is an array with the same dimmensions as the grid,
         and with the cost of stepping on each free cell.
         Some implementations may ignore this parameter.
+        """
+        pass
+
+    def get_visited(self):
+        """
+        Return all cells visited by the algorithm after caling get_path.
+        Implementing this method is optional.
         """
         pass
