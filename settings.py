@@ -2,7 +2,7 @@
 import numpy as np
 
 # measurements in feet
-bot_height = 0.25
+bot_height = 0.323
 maze_width = 9.0
 maze_length = 14.0
 
