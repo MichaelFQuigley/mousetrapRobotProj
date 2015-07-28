@@ -21,16 +21,11 @@ def init():
 
 
 def VideoCapture(ind):
-    global cap, selected
+    global cap
     if ind == selected:
         return cap
 
-    selected = ind
-    old = cap
-    cap = cv2.VideoCapture(selected)
-    if old is not None:
-        old.release()
-    return cap
+    cap = cv2.VideoCapture(ind)
 
 def read():
     frame = read_frame()

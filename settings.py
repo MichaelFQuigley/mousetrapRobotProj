@@ -1,6 +1,11 @@
 """Common settings for application and testing"""
 import numpy as np
 
+# measurements in feet
+bot_height = 0.25
+maze_width = 9.0
+maze_length = 14.0
+
 image_height = 600
 maze = {}
 bot = {}
@@ -9,10 +14,15 @@ raw_image = []
 map_image = []
 
 maze = {}
-bot = {}
+bot_front = {}
+bot_back= {}
 overlay = {}
 
-for a_set in maze, bot, overlay:
+track_bot = False
+camera_height = 1.0
+camera_distance = 1.0
+
+for a_set in maze, bot_front, bot_back, overlay:
     a_set['ey'] = 1
     a_set['ex'] = 1
     a_set['dy'] = 1
@@ -30,10 +40,12 @@ top_right = (416, 54)
 bottom_right = (585, 312)
 bottom_left = (23, 316)
 
+
 def get_map(name):
     purposes = {
         'overlay': overlay,
-        'bot': bot,
+        'bot_front': bot_front,
+        'bot_back': bot_back,
         'maze': maze
     }
     return purposes[name]

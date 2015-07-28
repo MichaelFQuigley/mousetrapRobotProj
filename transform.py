@@ -5,8 +5,8 @@ import settings
 
 RATIO_HEIGHT_WIDTH = 1.571929824561403
 
-def four_point_transform(image, pts):
 
+def four_point_transform(image, pts):
     # compute the width of the new image, which will be the
     # maximum distance between bottom-right and bottom-left
     # x-coordiates or the top-right and top-left x-coordinates
@@ -57,25 +57,27 @@ def filter(hsvImg, mins, maxes):
     return filtered_img
 
 
-def raw_to_map(image, purpose):
+def raw_to_map(image, purpose, hue=187.0):
     # cv2.imwrite('calibratergb.jpg', image)
     warped_image = four_point_transform(image, np.array([settings.top_left, settings.top_right,
                                                          settings.bottom_right, settings.bottom_left], np.float32))
-    warped_image = cv2.resize(warped_image, (settings.image_height, int(settings.image_height*RATIO_HEIGHT_WIDTH)))
+    warped_image = cv2.resize(warped_image, (settings.image_height, int(settings.image_height * RATIO_HEIGHT_WIDTH)))
     # cv2.imwrite('warped.jpg', warped_image)
     hsvImg = cv2.cvtColor(warped_image, cv2.COLOR_BGR2HSV)
+
     filtered_image = filter(hsvImg,
                             (purpose['hMin'], purpose['sMin'], purpose['vMin']),
                             (purpose['hMax'], purpose['sMax'], purpose['vMax']))
     processed_image = postProcess(filtered_image,
                                   (purpose['dy'], purpose['dx']),
                                   (purpose['ey'], purpose['ex']))
-    if purpose is settings.bot:
-        cv2.imwrite('processed.jpg', processed_image)
+
     return processed_image
+
 
 def bitmap_from_image(image):
     return cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)[1]
+
 
 def as_pixmap(frame):
     gray = False
@@ -98,3 +100,13 @@ def resize_image(image):
 
     return image
 
+
+def get_bot_overlay():
+    pass
+
+
+def overlay(*args):
+    oly = np.array(args[0][0])
+    for arg in args[1:]:
+        oly += arg[0]
+    return oly

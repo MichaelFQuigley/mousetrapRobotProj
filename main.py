@@ -10,6 +10,7 @@ from os import path
 from PyQt4 import QtCore, QtGui
 import time
 import settings
+import tracker
 
 
 class Loop(QtCore.QObject):
@@ -22,7 +23,18 @@ class Loop(QtCore.QObject):
             if frame is None:
                 time.sleep(.25)
             else:
-                self.image_ready.emit(frame, transform.raw_to_map(frame, settings.get_map('overlay')))
+                if settings.track_bot:
+                    if settings.maze['image'] is None:
+                        settings.maze['image'] = transform.raw_to_map(frame, settings.maze, QtCore.Qt.white)
+                    settings.bot_front['image'] = transform.raw_to_map(frame, settings.bot_front, QtCore.Qt.red)
+                    settings.bot_back['image'] = transform.raw_to_map(frame, settings.bot_back, QtCore.Qt.green)
+                    position, vector = tracker.get_bot_info()
+                    processed = transform.overlay((settings.maze['image'], QtCore.Qt.white),
+                                                  (settings.bot_front['image'], QtCore.Qt.red),
+                                                  (settings.bot_back['image'], QtCore.Qt.green))
+                else:
+                    processed = transform.raw_to_map(frame, settings.maze)
+                self.image_ready.emit(frame, processed)
 
 
 if __name__ == '__main__':
@@ -32,7 +44,7 @@ if __name__ == '__main__':
     if cameras.detected > 0:
         cameras.VideoCapture(cameras.detected - 1)
     else:
-        cameras.VideoCapture(path.join('img', '5.jpg'))
+        cameras.VideoCapture(path.join('img', 'mousetraps.jpg'))
     main = ui.MainWindow()
     main.raw.right_click.connect(main.points_changed)
     main.processed.left_click.connect(main.set_bot_pos)
@@ -41,7 +53,8 @@ if __name__ == '__main__':
     work = Loop()
     work.image_ready.connect(main.on_image_ready)
     work.image_ready.connect(main.map_sliders.get_image)
-    work.image_ready.connect(main.bot_sliders.get_image)
+    work.image_ready.connect(main.bot_front_sliders.get_image)
+    work.image_ready.connect(main.bot_back_sliders.get_image)
     work.moveToThread(thread)
     thread.started.connect(work.process_camera_frames)
     thread.finished.connect(app.exit)

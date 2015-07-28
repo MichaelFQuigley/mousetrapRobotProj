@@ -1,5 +1,5 @@
 import cameras
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore, QtGui, Qt
 import numpy as np
 from functools import partial
 from os import path
@@ -9,6 +9,10 @@ from SubQLabel import SubQLabel
 import settings
 import path as pth
 from transform import as_pixmap, resize_image
+from camera_dialog import CameraDialog
+
+def track_bot():
+    settings.track_bot = not settings.track_bot
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -26,7 +30,9 @@ class MainWindow(QtGui.QMainWindow):
         self.calibration_corner = 0
         self.initializing = True
         self.map_sliders = SlidersDialog(self, 'maze')
-        self.bot_sliders = SlidersDialog(self, 'bot')
+        self.bot_front_sliders = SlidersDialog(self, 'bot_front')
+        self.bot_back_sliders = SlidersDialog(self, 'bot_back')
+        self.camera_dialog = CameraDialog(self)
 
         self.init_menubar()
         self.init_central_widget()
@@ -59,13 +65,43 @@ class MainWindow(QtGui.QMainWindow):
         init_map.triggered.connect(self.show_map_sliders)
         initMenu.addAction(init_map)
 
-        init_bot = QtGui.QAction(QtGui.QIcon('Init Bot'), 'Init Bot', self)
-        init_bot.setShortcut('Ctrl+B')
-        init_bot.setStatusTip('Bot image initialization settings')
-        init_bot.triggered.connect(self.show_bot_sliders)
-        initMenu.addAction(init_bot)
+        init_bot_front = QtGui.QAction(QtGui.QIcon('Init Bot Front'), 'Init Bot Front', self)
+        init_bot_front.setShortcut('Ctrl+B')
+        init_bot_front.setStatusTip('Bot image initialization settings')
+        init_bot_front.triggered.connect(self.show_bot_front_sliders)
+        initMenu.addAction(init_bot_front)
+
+        init_bot_back = QtGui.QAction(QtGui.QIcon('Init Bot Back'), 'Init Bot Back', self)
+        init_bot_back.setShortcut('Ctrl+B')
+        init_bot_back.setStatusTip('Bot image initialization settings')
+        init_bot_back.triggered.connect(self.show_bot_back_sliders)
+        initMenu.addAction(init_bot_back)
+
+        init_camera = QtGui.QAction(QtGui.QIcon('Init Camera'), 'Init Camera', self)
+        init_camera.setShortcut('Ctrl+C')
+        init_camera.setStatusTip('Set camera height and horizontal distance from maze')
+        init_camera.triggered.connect(self.show_camera_init)
+        initMenu.addAction(init_camera)
+
+        init_track_bot = QtGui.QAction(QtGui.QIcon('Track Bot'), 'Track Bot', self)
+        init_track_bot.setShortcut('Ctrl+T')
+        init_track_bot.setStatusTip('Begin tracking bot position')
+        init_track_bot.triggered.connect(track_bot)
+        initMenu.addAction(init_track_bot)
+
+        reset_video = QtGui.QAction(QtGui.QIcon('replay video'), 'replay video', self)
+        reset_video.triggered.connect(partial(cameras.VideoCapture, 'output.avi'))
+        initMenu.addAction(reset_video)
 
         menu.addMenu(initMenu)
+
+    def show_camera_init(self):
+        camheight, okh = QtGui.QInputDialog.getDouble(self, 'Camera', 'Enter Camera Height (in feet)')
+        camdist, okd = QtGui.QInputDialog.getDouble(self, 'Camera', 'Enter Horizontal distance from camera to maze (in feet)')
+        if okh and okd:
+            settings.camera_height = camheight
+            settings.camera_distance = camdist
+            print str(camheight) + " " + str(camdist)
 
     def init_central_widget(self):
         widget = QtGui.QWidget()
@@ -94,7 +130,12 @@ class MainWindow(QtGui.QMainWindow):
                 settings.bottom_left = (0, orig_pixmap.height() - 1)
 
             self.initializing = False
-        self.processed.setPixmap(as_pixmap(new))
+
+        pm = as_pixmap(new)
+        cpm = QtGui.QPixmap(pm.size())
+        cpm.fill(QtCore.Qt.red)
+        cpm.setMask(pm.createMaskFromColor(QtCore.Qt.transparent))
+        self.processed.setPixmap(pm)
 
     def set_bot_pos(self, x, y):
         print "set_bot_pos called with ({}, {})".format(x, y)
@@ -110,8 +151,12 @@ class MainWindow(QtGui.QMainWindow):
         self.map_sliders.exec_()
 
     @QtCore.pyqtSlot()
-    def show_bot_sliders(self):
-        self.bot_sliders.exec_()
+    def show_bot_front_sliders(self):
+        self.bot_front_sliders.exec_()
+
+    @QtCore.pyqtSlot()
+    def show_bot_back_sliders(self):
+        self.bot_back_sliders.exec_()
 
     # sets a corner point for image translation. cycles through points
     def points_changed(self, x, y):
