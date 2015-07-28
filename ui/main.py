@@ -88,10 +88,10 @@ class MainWindow(QtGui.QMainWindow):
         self.raw.setPixmap(orig_pixmap)
         if self.initializing:
             for key in settings.bot, settings.maze:
-                key['top_left'] = (0, 0)
-                key['top_right'] = (orig_pixmap.width() - 1, 0)
-                key['bottom_right'] = (orig_pixmap.width() - 1, orig_pixmap.height() - 1)
-                key['bottom_left'] = (0, orig_pixmap.height() - 1)
+                settings.top_left = (0, 0)
+                settings.top_right = (orig_pixmap.width() - 1, 0)
+                settings.bottom_right = (orig_pixmap.width() - 1, orig_pixmap.height() - 1)
+                settings.bottom_left = (0, orig_pixmap.height() - 1)
 
             self.initializing = False
         self.processed.setPixmap(as_pixmap(new))
@@ -119,11 +119,11 @@ class MainWindow(QtGui.QMainWindow):
         c = self.calibration_corner
         print "Setting point: c = {}. Pt: ({}, {})".format(c, x, y)
         if c == 0:
-            settings.maze['top_left'] = (x, y)
+            settings.top_left = (x, y)
         elif c == 1:
-            settings.maze['top_right'] = (x, y)
+            settings.top_right = (x, y)
         elif c == 2:
-            settings.maze['bottom_right'] = (x, y)
+            settings.bottom_right = (x, y)
         elif c == 3:
-            settings.maze['bottom_left'] = (x, y)
+            settings.bottom_left = (x, y)
         self.calibration_corner += 1

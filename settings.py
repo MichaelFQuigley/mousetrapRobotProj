@@ -6,40 +6,34 @@ maze = {}
 bot = {}
 
 raw_image = []
+map_image = []
 
-#defaults for map
-maze['ey'] = 1
-maze['ex'] = 1
-maze['dy'] = 1
-maze['dx'] = 1
-maze['hMin'] = 0
-maze['hMax'] = 255
-maze['sMin'] = 0
-maze['sMax'] = 255
-maze['vMin'] = 100
-maze['vMax'] = 255
-maze['top_left'] = (195, 53)
-maze['top_right'] = (416, 54)
-maze['bottom_right'] = (585, 312)
-maze['bottom_left'] = (23, 316)
+maze = {}
+bot = {}
+overlay = {}
 
-#defaults for bot
-bot['bot_position'] = (0, 0)
-bot['goal_position'] = (1, 1)
-bot['ey'] = 1
-bot['ex'] = 1
-bot['dy'] = 1
-bot['dx'] = 1
-bot['hMin'] = 0
-bot['hMax'] = 255
-bot['sMin'] = 0
-bot['sMax'] = 255
-bot['vMin'] = 100
-bot['vMax'] = 255
-bot['top_left'] = (195, 53)
-bot['top_right'] = (416, 54)
-bot['bottom_right'] = (585, 312)
-bot['bottom_left'] = (23, 316)
+for a_set in maze, bot, overlay:
+    a_set['ey'] = 1
+    a_set['ex'] = 1
+    a_set['dy'] = 1
+    a_set['dx'] = 1
+    a_set['hMin'] = 0
+    a_set['hMax'] = 255
+    a_set['sMin'] = 0
+    a_set['sMax'] = 255
+    a_set['vMin'] = 100
+    a_set['vMax'] = 255
+    a_set['image'] = None
+
+top_left = (195, 53)
+top_right = (416, 54)
+bottom_right = (585, 312)
+bottom_left = (23, 316)
 
 def get_map(name):
-    return maze if name == 'maze' else bot
+    purposes = {
+        'overlay': overlay,
+        'bot': bot,
+        'maze': maze
+    }
+    return purposes[name]
