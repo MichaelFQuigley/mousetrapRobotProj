@@ -22,7 +22,7 @@ class Loop(QtCore.QObject):
             if frame is None:
                 time.sleep(.25)
             else:
-                self.image_ready.emit(frame, transform.raw_to_map(frame, settings.get_map('maze')))
+                self.image_ready.emit(frame, transform.raw_to_map(frame, settings.get_map('overlay')))
 
 
 if __name__ == '__main__':
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     if cameras.detected > 0:
         cameras.VideoCapture(cameras.detected - 1)
     else:
-        cameras.VideoCapture(path.join('img', 'mousetraps.jpg'))
+        cameras.VideoCapture(path.join('img', '5.jpg'))
     main = ui.MainWindow()
     main.raw.right_click.connect(main.points_changed)
     main.processed.left_click.connect(main.set_bot_pos)

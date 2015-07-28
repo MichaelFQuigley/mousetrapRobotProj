@@ -59,9 +59,8 @@ def filter(hsvImg, mins, maxes):
 
 def raw_to_map(image, purpose):
     # cv2.imwrite('calibratergb.jpg', image)
-    warped_image = four_point_transform(image, np.array([purpose['top_left'], purpose['top_right'],
-                                                         purpose['bottom_right'],
-                                                         purpose['bottom_left']], np.float32))
+    warped_image = four_point_transform(image, np.array([settings.top_left, settings.top_right,
+                                                         settings.bottom_right, settings.bottom_left], np.float32))
     warped_image = cv2.resize(warped_image, (settings.image_height, int(settings.image_height*RATIO_HEIGHT_WIDTH)))
     # cv2.imwrite('warped.jpg', warped_image)
     hsvImg = cv2.cvtColor(warped_image, cv2.COLOR_BGR2HSV)
@@ -71,7 +70,8 @@ def raw_to_map(image, purpose):
     processed_image = postProcess(filtered_image,
                                   (purpose['dy'], purpose['dx']),
                                   (purpose['ey'], purpose['ex']))
-    cv2.imwrite('processed.jpg', processed_image)
+    if purpose is settings.bot:
+        cv2.imwrite('processed.jpg', processed_image)
     return processed_image
 
 def bitmap_from_image(image):

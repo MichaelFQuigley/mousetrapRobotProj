@@ -105,4 +105,4 @@ def path_test():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-path_test()
+# path_test()
