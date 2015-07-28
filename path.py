@@ -76,11 +76,8 @@ def path_test():
     print "dilating..."
     start_time = time.time()
     dilated_map = dilate_map(the_map)
-    #dilated_map = the_map
     end_time = time.time()
     print("Elapsed time: " + str(end_time - start_time))
-
-    dilated_map = cv2.threshold(dilated_map, 128, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
     print "computing weights..."
     start_time = time.time()
@@ -98,7 +95,7 @@ def path_test():
     print "done!"
     
     # Draw path on image
-    waypoints = pathFinder.sample_path(robot_path)
+    waypoints = pathFinder.sample_path(robot_path, 10)
     for cell in waypoints:
         red = [0, 0, 255] # BGR
         img[cell[0]][cell[1]] = red
@@ -115,4 +112,4 @@ def path_test():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# path_test()
+#path_test()
