@@ -21,35 +21,34 @@ void loop() {
         motors.brake();
         break;
       case 'f': // front
-        motors.leftDrive(240); // This tries to compensate for the redbot not driving straight
-        motors.rightDrive(255);
+        motors.drive(125);
         break;
       case 'l': // left
-        motors.leftDrive(-100);
-        motors.rightDrive(100);
+        motors.leftDrive(-75);
+        motors.rightDrive(75);
         break;
       case 'r': // right
-        motors.leftDrive(100);
-        motors.rightDrive(-100);
+        motors.leftDrive(75);
+        motors.rightDrive(-75);
         break;
       case 'b': // back
-        motors.drive(-175);
+        motors.drive(-100);
         break;
       case 'w': // front left
-        motors.leftDrive(175);
-        motors.rightDrive(255);
+        motors.leftDrive(100);
+        motors.rightDrive(125);
         break;
       case 'x': // front right
-        motors.leftDrive(240);
-        motors.rightDrive(175);
+        motors.leftDrive(125);
+        motors.rightDrive(100);
         break;
       case 'y': // back left
-        motors.leftDrive(-100);
-        motors.rightDrive(-175);
+        motors.leftDrive(-75);
+        motors.rightDrive(-100);
         break;
       case 'z': // back right
-        motors.leftDrive(-175);
-        motors.rightDrive(-100);
+        motors.leftDrive(-100);
+        motors.rightDrive(-75);
         break;
     }
   }
