@@ -93,16 +93,13 @@ def compute_map_weights(the_map):
 
     print("max distance: " + str(max_dist))
 
-    # Determine weights from distances (scaled to [0, 255])
-    weights = np.copy(the_map)
+    # Determine weights from distances
+    weights = np.zeros(the_map.shape)
     for row in range(h):
         for col in range(w):
-            #weights[row][col] = int( 255 - 255 * dist[row][col] // max_dist )
-            #weights[row][col] = int( (weights[row][col] ** 0.5) * 255 / float(255 ** 0.5) )
             x = 1.0 - dist[row][col] / float(max_dist)
-            x = x ** 0.5
-            x = x * 255
-            weights[row][col] = int(x)
+            x *= w + h
+            weights[row][col] = x
 
     return weights
 
