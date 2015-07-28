@@ -33,6 +33,13 @@ def find_path(grid, origin, dest, weights=None):
 set_type('AStar')
 
 
+def sample_path(path, step):
+    p = []
+    for x in range(0, len(path), step):
+        p.append(path[x])
+    return p
+        
+
 # Predetermined neighbor coordinates
 neighbor_cords_8 = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 neighbor_cords_4 = [(-1, 0), (0, -1), (0, 1), (1, 0)]
@@ -86,11 +93,13 @@ def compute_map_weights(the_map):
 
     print("max distance: " + str(max_dist))
 
-    # Determine weights from distances (scaled to [0, 255])
-    weights = np.copy(the_map)
+    # Determine weights from distances
+    weights = np.zeros(the_map.shape)
     for row in range(h):
         for col in range(w):
-            weights[row][col] = int( 255 - 255 * dist[row][col] // max_dist )
+            x = 1.0 - dist[row][col] / float(max_dist)
+            x *= w + h
+            weights[row][col] = x
 
     return weights
 

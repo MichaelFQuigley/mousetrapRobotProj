@@ -18,19 +18,18 @@ void loop() {
     incomingByte = swsp.read();
     switch (incomingByte) {
       case 'u': // up
-        motors.leftDrive(240); // This tries to compensate for the redbot not driving straight
-        motors.rightDrive(255);
+        motors.drive(125);
         break;
       case 'l': // left
-        motors.leftDrive(-100);
-        motors.rightDrive(100);
+        motors.leftDrive(-75);
+        motors.rightDrive(75);
         break;
       case 'r': // right
-        motors.leftDrive(100);
-        motors.rightDrive(-100);
+        motors.leftDrive(75);
+        motors.rightDrive(-75);
         break;
       case 'd': // down
-        motors.drive(-175);
+        motors.drive(-100);
         break;
     }
     delay(100);

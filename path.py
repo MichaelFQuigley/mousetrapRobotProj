@@ -2,7 +2,7 @@ from __future__ import division
 
 import cv2
 import numpy as np
-import cameras
+#import cameras
 import time
 
 from os import path
@@ -65,7 +65,7 @@ def display_image(window_name, img):
 
 def path_test():
 
-    img = read_image("map-small-2.png")
+    img = read_image("processed-small.png")
     the_map = get_map(img)
 
     h = len(the_map)
@@ -89,20 +89,27 @@ def path_test():
     start_time = time.time()
     path_length, robot_path = pathFinder.find_path(dilated_map, origin, dest, weights)
     end_time = time.time()
+    print("path lenth: " + str(path_length))
     print("Elapsed time: " + str(end_time - start_time))
 
     print "done!"
     
     # Draw path on image
-    for cell in robot_path:
-        img[cell[0]][cell[1]] = [0, 0, 255] # BGR
+    waypoints = pathFinder.sample_path(robot_path, 10)
+    for cell in waypoints:
+        red = [0, 0, 255] # BGR
+        img[cell[0]][cell[1]] = red
+        img[cell[0] - 1][cell[1]] = red
+        img[cell[0] + 1][cell[1]] = red
+        img[cell[0]][cell[1] - 1] = red
+        img[cell[0]][cell[1] + 1] = red
     
     #display_image("Map", the_map)
-    #display_image("Dilation", dilated_map)
+    display_image("Dilation", dilated_map)
     display_image("Weights", weights)
     display_image("Path", img)
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# path_test()
+#path_test()
