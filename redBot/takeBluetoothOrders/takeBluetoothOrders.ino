@@ -15,7 +15,7 @@ char delimeter(',');
 int rightWheel = 0;
 char endOrders('\n');
 
-const int sensorThreshold = 600;
+const int sensorThreshold = 500;
 
 typedef void (*State)(void);
 void normal();
