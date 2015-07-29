@@ -2,7 +2,6 @@ from PyQt4 import QtGui
 import numpy as np
 import cv2
 import settings
-
 RATIO_HEIGHT_WIDTH = 1.571929824561403
 
 
@@ -106,7 +105,23 @@ def get_bot_overlay():
 
 
 def overlay(*args):
-    oly = np.array(args[0][0])
+    oly = np.array(args[0])
+    # oly = cv2.cvtColor(oly, cv2.COLOR_GRAY2HSV)
     for arg in args[1:]:
-        oly += arg[0]
+        oly += arg
     return oly
+
+
+def draw_bot(position, front):
+    image = np.zeros((settings.maze['image'].shape[0], settings.maze['image'].shape[1]), np.float32)
+    try:
+        arrow_tip = (int(front[0]), int(front[1]))
+        position = (int(position[0]), int(position[1]))
+        # image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+        cv2.arrowedLine(image, position, arrow_tip, (180, 255, 255), 2)
+        return image
+    except TypeError:
+        print "Bot missing!"
+        return image
+
+

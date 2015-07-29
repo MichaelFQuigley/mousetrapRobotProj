@@ -7,9 +7,9 @@ from sliders import SlidersDialog
 import cv2
 from SubQLabel import SubQLabel
 import settings
-import path as pth
 from transform import as_pixmap, resize_image
 from camera_dialog import CameraDialog
+import robotBluetooth
 
 def track_bot():
     settings.track_bot = not settings.track_bot
@@ -93,7 +93,58 @@ class MainWindow(QtGui.QMainWindow):
         reset_video.triggered.connect(partial(cameras.VideoCapture, 'output.avi'))
         initMenu.addAction(reset_video)
 
+        save_settings = QtGui.QAction(QtGui.QIcon('save settings'), 'save settings', self)
+        save_settings.setShortcut('Ctrl+S')
+        save_settings.triggered.connect(partial(settings.save, 'settings.pyb'))
+        initMenu.addAction(save_settings)
+
+        load_settings_action = QtGui.QAction(QtGui.QIcon('load settings'), 'load settings', self)
+        load_settings_action.setShortcut('Ctrl+L')
+        load_settings_action.triggered.connect(self.load_settings)
+        initMenu.addAction(load_settings_action)
         menu.addMenu(initMenu)
+
+        redbot_menu = menu.addMenu("Redbot")
+        redbot_connect_action = QtGui.QAction(QtGui.QIcon('connect'), 'connect', self)
+        redbot_connect_action.triggered.connect(self.redbot_connect)
+        redbot_menu.addAction(redbot_connect_action)
+
+        redbot_go_action = QtGui.QAction(QtGui.QIcon('go'), 'go', self)
+        redbot_go_action.triggered.connect(self.redbot_go)
+        redbot_menu.addAction(redbot_go_action)
+        menu.addMenu(redbot_menu)
+
+    @QtCore.pyqtSlot()
+    def redbot_go(self):
+        settings.robo_go = not settings.robo_go
+
+    @QtCore.pyqtSlot()
+    def redbot_connect(self):
+        self.redbot = robotBluetooth.BTPeripheral('/dev/cu.HC-06-DevB')
+        try:
+            if self.redbot.connect():
+                print "robot connected"
+            else:
+                print "failed to connect"
+        except Exception:
+            print "robot blew up"
+
+
+    @QtCore.pyqtSlot()
+    def load_settings(self, file_path='settings.pyb'):
+        settings.load(file_path)
+        bot_back_sliders = self.bot_back_sliders.findChildren(QtGui.QSlider)
+        bot_front_sliders = self.bot_front_sliders.findChildren(QtGui.QSlider)
+        map_sliders = self.map_sliders.findChildren(QtGui.QSlider)
+        for thing, i in {'ey': 0, 'ex': 1, 'dy': 2, 'dx': 3, 'hMin': 4, 'hMax': 5, 'sMin': 6, 'sMax': 7, 'vMin': 8, 'vMax': 9}.iteritems():
+            bot_back_sliders[i].setSliderPosition(settings.bot_back[thing])
+            print thing + ' ' + str(settings.bot_back[thing])
+            bot_front_sliders[i].setSliderPosition(settings.bot_front[thing])
+            map_sliders[i].setSliderPosition(settings.maze[thing])
+            # back_slider = self.bot_back_sliders.findChild(QtGui.QSlider, thing)
+            # back_slider.setSliderPosition(settings.bot_back[thing])
+            # self.bot_front_sliders.findChild(QtGui.QSlider, thing).setSliderPosition(settings.bot_front[thing])
+            # self.map_sliders.findChild(QtGui.QSlider, thing).setSliderPosition(settings.maze[thing])
 
     def show_camera_init(self):
         camheight, okh = QtGui.QInputDialog.getDouble(self, 'Camera', 'Enter Camera Height (in feet)')
