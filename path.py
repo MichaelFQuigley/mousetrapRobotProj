@@ -8,7 +8,7 @@ from os import path
 from Queue import Queue
 
 import settings
-import pathFinder
+import pathFinder as path_finder
 from pathFinder import preprocessing
 
 
@@ -33,22 +33,6 @@ def threshold_img(gray_img):
     return np.array(img_thresh[1])
 
 
-def color_pixel(img, row, col, color):
-    height = len(img)
-    width = len(img[0])
-    if row >= 0 and row < height and col >= 0 and col < width:
-        img[row][col] = color
-
-def mark_location(img, coordinates, color):
-    # Draw a cross
-    row = coordinates[0]
-    col = coordinates[1]
-    color_pixel(img, row, col, color) 
-    color_pixel(img, row - 1, col, color) 
-    color_pixel(img, row + 1, col, color) 
-    color_pixel(img, row, col - 1, color) 
-    color_pixel(img, row, col + 1, color) 
-    
 def display_image(window_name, img):
     window = cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
     cv2.imshow(window_name, img)
@@ -56,7 +40,23 @@ def display_image(window_name, img):
 
 def path_test():
 
-    img = read_image("processed-small.png")
+    img = read_image("processed.png")
+
+    h = len(img)
+    w = len(img[0])
+
+    print "Resizing map..."
+    start_time = time.time()
+    #dilated_map = preprocessing.dilate_map(the_map)
+    small_img = cv2.resize(img, (w//2,h//2), interpolation = cv2.INTER_AREA)
+    print img.shape
+    print small_img.shape
+    img = small_img
+    end_time = time.time()
+    print("Elapsed time: " + str(end_time - start_time))
+
+
+
     the_map = get_map(img)
     the_map = threshold_img(the_map)
 
@@ -64,6 +64,8 @@ def path_test():
     w = len(img[0])
     origin = (h // 7 // 2, w // 3 // 2 * 5)
     dest = (h // 7 // 2 * 13, w // 3 // 2 * 3)
+
+    
 
     print "Dilating map..."
     start_time = time.time()
@@ -79,12 +81,14 @@ def path_test():
 
     print "Computing path..."
     start_time = time.time()
-    path_length, robot_path = pathFinder.find_path(dilated_map, origin, dest, weights)
-    waypoints = pathFinder.sample_path(robot_path, 10)
+    path_length, robot_path = path_finder.find_path(dilated_map, origin, dest, weights)
+    waypoints = path_finder.sample_path(robot_path, 10)
     end_time = time.time()
-    print("path lenth: " + str(path_length))
     print("Elapsed time: " + str(end_time - start_time))
 
+
+    print "Creating image..."
+    start_time = time.time()
 
     # Convert weights to an image that can be displayed
     weights_img = preprocessing.create_weights_image(weights)
@@ -95,6 +99,8 @@ def path_test():
     # Draw path on image
     preprocessing.draw_path(display_img, origin, dest, waypoints)
     
+    end_time = time.time()
+    print("Elapsed time: " + str(end_time - start_time))
 
     # Show images for all steps
     #display_image("Map", the_map)
@@ -104,5 +110,8 @@ def path_test():
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+
+
 
 path_test()
