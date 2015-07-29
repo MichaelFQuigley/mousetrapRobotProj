@@ -9,6 +9,21 @@ from Queue import Queue
 import settings
 
 
+def get_map_img(img):
+    """
+    Get map as a NumPy array.
+    """
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return np.array(img_gray)
+
+def threshold_img(gray_img):
+    """
+    Make image black and white (no grays).
+    """
+    img_thresh = cv2.threshold(gray_img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    return np.array(img_thresh[1])
+
+
 def get_dilation_kernel(grid):
     """
     Get dilation kernel, based on robot size...
