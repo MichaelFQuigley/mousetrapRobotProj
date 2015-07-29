@@ -1,6 +1,12 @@
 """
 Pre-processing functions for path finder.
 """
+import os, sys
+
+# For importing settings module from parent directory
+currentdir = os.path.dirname(__file__)
+parentdir = os.path.join(currentdir, os.pardir)
+sys.path.append(parentdir)
 
 import cv2
 import numpy as np

@@ -4,7 +4,7 @@ import numpy as np
 from Queue import Queue
 
 import preprocessing
-from pathFinderDijkstra import PathFinderDijkstra as Dijkstra
+from path_dijkstra import PathFinderDijkstra as Dijkstra
 from path_as import PathFinderAStar as AStar
 from path_bfs import PathFinderBFS as BFS
 
@@ -36,10 +36,7 @@ set_type('AStar')
 
 
 def sample_path(path, step):
-    p = []
-    for x in range(0, len(path), step):
-        p.append(path[x])
-    return p
+    return [path[i] for i in range(0, len(path), step)]
 
 def find_path_from_image(img, origin, dest):
     """
