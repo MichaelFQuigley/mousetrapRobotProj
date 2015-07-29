@@ -9,6 +9,7 @@ from Queue import Queue
 
 import settings
 import pathFinder
+from pathFinder import preprocessing
 
 
 def read_image(file_name):
@@ -30,28 +31,6 @@ def threshold_img(gray_img):
     """
     img_thresh = cv2.threshold(gray_img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     return np.array(img_thresh[1])
-
-
-def get_dilation_kernel(grid):
-    """
-    Based on robot size...
-    """
-    grid_height, grid_width = grid.shape
-    
-    kernel_width = settings.bot_radius * grid_width / settings.maze_width
-    kernel_height = settings.bot_radius * grid_height / settings.maze_length
-
-    print "kernel width:", kernel_width
-    print "kernel height:", kernel_height
-    
-    return np.ones((kernel_height, kernel_width), np.uint8)
-
-def dilate_map(grid):
-    """
-    Based on robot size...
-    """
-    kernel = get_dilation_kernel(grid)
-    return cv2.dilate(grid, kernel, iterations = 1)
 
 
 def color_pixel(img, row, col, color):
@@ -88,13 +67,13 @@ def path_test():
 
     print "dilating..."
     start_time = time.time()
-    dilated_map = dilate_map(the_map)
+    dilated_map = preprocessing.dilate_map(the_map)
     end_time = time.time()
     print("Elapsed time: " + str(end_time - start_time))
 
     print "Computing weights..."
     start_time = time.time()
-    weights = pathFinder.compute_map_weights(dilated_map)
+    weights = preprocessing.compute_map_weights(dilated_map)
     end_time = time.time()
     print("Elapsed time: " + str(end_time - start_time))
 
