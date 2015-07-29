@@ -3,6 +3,7 @@ import pickle
 
 # measurements in feet
 bot_height = 0.323
+bot_radius = 0.35
 maze_width = 9.0
 maze_length = 11.0
 

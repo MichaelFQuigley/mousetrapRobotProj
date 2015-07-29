@@ -4,12 +4,6 @@ from Queue import PriorityQueue
 from path import PathFinder
 
 
-# For debugging...
-def print_grid(grid):
-    for row in range(len(grid)):
-        print(grid[row])
-
-
 class PathFinderAStar(PathFinder):
     """
     A* Search path finder.
@@ -76,24 +70,3 @@ class PathFinderAStar(PathFinder):
     def get_visited(self):
         return self.visited
 
-#Simple test...
-def run_test():
-
-    grid = np.array([[0, 1, 0, 0, 0],
-                     [0, 1, 0, 1, 0],
-                     [0, 1, 0, 1, 0],
-                     [0, 1, 0, 1, 0],
-                     [0, 0, 0, 1, 0]])
-    origin = (0, 0)
-    dest = (4, 4)
-
-    path_finder = PathFinderAStar(grid)
-    path_length, path = path_finder.get_path(origin, dest)
-
-    print("distance: " + str(path_length))
-    print("path: " + str(path))
-
-    assert path == [(0,0), (1,0), (2,0), (3,0), (4,1), (3,2), (2,2), (1,2), (0,3), (1,4), (2,4), (3,4), (4,4)]
-
-run_test()
- 

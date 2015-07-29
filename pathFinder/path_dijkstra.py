@@ -1,4 +1,3 @@
-#pathFinderDijkstra.py
 #Author: Michael Quigley
 
 #assumes that the origin is at the top left        
@@ -120,12 +119,13 @@ class PathFinderDijkstra(PathFinder):
             if bestNeighbor != None:
                 currPos = bestNeighbor
                 currPath.append(bestNeighbor)
-        print(currPath)
+        #print(currPath)
         return self.getDist(endPos), currPath
 
     def get_path(self, origin, dest, weights = None):
-        return self.getShortestPathIterative(origin, dest)
-        
+        path_legth, path = self.getShortestPathIterative(origin, dest)
+        path.reverse()
+        return path_legth, path
 
         
  
