@@ -65,7 +65,7 @@ def path_test():
     origin = (h // 7 // 2, w // 3 // 2 * 5)
     dest = (h // 7 // 2 * 13, w // 3 // 2 * 3)
 
-    print "dilating..."
+    print "Dilating map..."
     start_time = time.time()
     dilated_map = preprocessing.dilate_map(the_map)
     end_time = time.time()
@@ -80,54 +80,27 @@ def path_test():
     print "Computing path..."
     start_time = time.time()
     path_length, robot_path = pathFinder.find_path(dilated_map, origin, dest, weights)
+    waypoints = pathFinder.sample_path(robot_path, 10)
     end_time = time.time()
     print("path lenth: " + str(path_length))
     print("Elapsed time: " + str(end_time - start_time))
 
 
     # Convert weights to an image that can be displayed
-    weights_img = np.zeros(weights.shape, dtype = np.uint8)
-    max_weight = 0
-    for row in range(h):
-        for col in range(w):
-            if weights[row][col] > max_weight:
-                max_weight = weights[row][col]
-    for row in range(h):
-        for col in range(w):
-            weights_img[row][col] = int(weights[row][col] / float(max_weight) * 255)
+    weights_img = preprocessing.create_weights_image(weights)
 
     # Create diplay image with obstacles, weights, etc.
-    display = np.copy(img)
-    obstacle_color = [255, 255, 255]
-    dilation_color = [194, 32, 0]
-    for row in range(h):
-        for col in range(w):
-            if the_map[row][col] != 0:
-                display[row][col] = obstacle_color
-            elif dilated_map[row][col] != 0:
-                display[row][col] = dilation_color
-            else: # weights
-                #x = weights_img[row][col] * 0.75
-                #x = weights_img[row][col] ** 0.5 * (255 ** 0.5) * 0.5
-                x = weights_img[row][col]
-                display[row][col] = [x, x // 3, 0] 
+    display_img = preprocessing.create_display_image(the_map, dilated_map, weights_img)
 
     # Draw path on image
-    waypoints = pathFinder.sample_path(robot_path, 10)
-    for cell in waypoints:
-        red = [0, 0, 255] # BGR
-        mark_location(display, cell, red)
-
-    # Mark origin and destination
-    mark_location(display, origin, [0, 255, 0])
-    mark_location(display, dest, [0, 255, 0])
+    preprocessing.draw_path(display_img, origin, dest, waypoints)
     
 
     # Show images for all steps
     #display_image("Map", the_map)
     #display_image("Dilation", dilated_map)
-    #display_image("Weights", weights_img)
-    display_image("Path", display)
+    display_image("Weights", weights_img)
+    display_image("Path", display_img)
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()

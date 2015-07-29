@@ -97,3 +97,79 @@ def compute_map_weights(the_map):
             weights[row][col] = x
 
     return weights
+
+
+def create_weights_image(weights):
+    """
+    Convert weights 2D array to an image that can be displayed.
+    """
+    h, w = weights.shape
+    weights_img = np.zeros(weights.shape, dtype = np.uint8)
+
+    max_weight = 0
+    for row in range(h):
+        for col in range(w):
+            if weights[row][col] > max_weight:
+                max_weight = weights[row][col]
+
+    for row in range(h):
+        for col in range(w):
+            weights_img[row][col] = int(weights[row][col] / float(max_weight) * 255)
+
+    return weights_img
+
+def create_display_image(the_map, dilated_map, weights_img):
+    """
+    Create image for display, including obstacles, dilation, and visual representation of weights.
+    """
+    obstacle_color = [255, 255, 255]
+    dilation_color = [194, 32, 0]
+
+    h, w = the_map.shape
+    display_img = np.zeros((h,w,3), dtype = np.uint8)
+    
+    for row in range(h):
+        for col in range(w):
+            if the_map[row][col] != 0:
+                display_img[row][col] = obstacle_color
+            elif dilated_map[row][col] != 0:
+                display_img[row][col] = dilation_color
+            else: # weights
+                #x = weights_img[row][col] * 0.75
+                #x = weights_img[row][col] ** 0.5 * (255 ** 0.5) * 0.5
+                x = weights_img[row][col]
+                display_img[row][col] = [x, x // 3, 0]
+
+    return display_img
+
+def draw_path(img, origin, dest, path_waypoints):
+    """
+    Draw path waypoints, and mark origin and destination.
+    """
+    path_color = [0, 0, 255]
+    endpoints_color = [0, 255, 0]
+    
+    # Draw path on image
+    for cell in path_waypoints:
+        mark_location(img, cell, path_color)
+
+    # Mark origin and destination
+    mark_location(img, origin, endpoints_color)
+    mark_location(img, dest, endpoints_color)
+
+def color_pixel(img, row, col, color):
+    height = len(img)
+    width = len(img[0])
+    if row >= 0 and row < height and col >= 0 and col < width:
+        img[row][col] = color
+
+def mark_location(img, coordinates, color):
+    # Draw a cross
+    row = coordinates[0]
+    col = coordinates[1]
+    color_pixel(img, row, col, color) 
+    color_pixel(img, row - 1, col, color) 
+    color_pixel(img, row + 1, col, color) 
+    color_pixel(img, row, col - 1, color) 
+    color_pixel(img, row, col + 1, color) 
+    
