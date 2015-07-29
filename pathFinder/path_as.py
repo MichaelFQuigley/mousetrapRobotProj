@@ -4,12 +4,6 @@ from Queue import PriorityQueue
 from path import PathFinder
 
 
-# For debugging...
-def print_grid(grid):
-    for row in range(len(grid)):
-        print(grid[row])
-
-
 class PathFinderAStar(PathFinder):
     """
     A* Search path finder.

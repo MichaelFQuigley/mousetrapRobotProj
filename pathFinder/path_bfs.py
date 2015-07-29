@@ -4,12 +4,6 @@ from Queue import Queue
 from path import PathFinder
 
 
-# For debugging...
-def print_grid(grid):
-    for row in range(len(grid)):
-        print(grid[row])
-
-
 class PathFinderBFS(PathFinder):
     """
     Breath First Search path finder.

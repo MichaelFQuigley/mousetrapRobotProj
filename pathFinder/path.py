@@ -1,5 +1,12 @@
 from copy import copy
 
+
+# For debugging...
+def print_grid(grid):
+    for row in range(len(grid)):
+        print(grid[row])
+
+
 class PathFinder(object):
     """
     Base class for different path finding implementations.

@@ -7,6 +7,7 @@ import time
 from os import path
 from Queue import Queue
 
+import settings
 import pathFinder
 
 
@@ -35,16 +36,10 @@ def get_dilation_kernel(grid):
     """
     Based on robot size...
     """
-    grid_width = len(grid[0])
-    grid_height = len(grid)
+    grid_height, grid_width = grid.shape
     
-    map_width = 9.0     # in feet
-    map_height = 14.0   # in feet
-
-    robot_radius = 0.35 # in feet -> ~ 4.2 inches
-
-    kernel_width = robot_radius * grid_width / map_width
-    kernel_height = robot_radius * grid_height / map_height
+    kernel_width = settings.bot_radius * grid_width / settings.maze_width
+    kernel_height = settings.bot_radius * grid_height / settings.maze_length
 
     print "kernel width:", kernel_width
     print "kernel height:", kernel_height
