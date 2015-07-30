@@ -3,7 +3,7 @@ import serial
 from tracker import cart2pol, pol2cart
 from numpy import cos, pi
 
-FULL_POWER = 255
+FULL_POWER = 150
 
 class bcolors:
     HEADER = '\033[95m'
@@ -66,23 +66,48 @@ class BTPeripheral:
         angle = target_bearing - bearing
         if angle < -2.0 * pi:
             angle += 2.0 * pi
-        left_wheel = FULL_POWER
-        right_wheel = FULL_POWER
         if abs(angle) > pi:
             if angle > pi:
                 angle -= 2.0 * pi
             else:
                 angle += 2.0 * pi
-        if angle < 0:
-            right_wheel = int(max(cos(-angle), 0.0) * FULL_POWER)
-        if angle > 0:
-            left_wheel = int(max(cos(angle), 0.0) * FULL_POWER)
+
+        left_wheel, right_wheel = self._control_linear(angle, FULL_POWER)
+
 
         print "bearing: {} rad {} deg".format(bearing, bearing * 180 / pi)
         print "target : {} rad {} deg".format(target_bearing, target_bearing * 180 / pi)
         print "angle  : {} rad {} deg".format(angle, angle * 180 / pi)
         print "sending power left, right  ({}, {})".format(left_wheel, right_wheel)
         # self.send("{}, {}\n".format(left_wheel, right_wheel))
+
+    @staticmethod
+    def _control_linear_with_spin(angle, max_power=FULL_POWER):
+        left_wheel = max_power
+        right_wheel = max_power
+        if angle < 0:
+            right_wheel = int((pi/2.0 + angle) * max_power / (pi/2.0))
+        if angle > 0:
+            left_wheel = int((pi/2.0 - angle) * max_power / (pi/2.0))
+        return left_wheel, right_wheel
+
+    @staticmethod
+    def _control_circular_with_spin(angle, max_power=FULL_POWER):
+        left_wheel = max_power
+        right_wheel = max_power
+        if angle < 0:
+            right_wheel = int(cos(-angle) * max_power)
+        if angle > 0:
+            left_wheel = int(cos(angle) * max_power)
+        return left_wheel, right_wheel
+
+    def _control_circular(self, angle, max_power=FULL_POWER):
+        left_wheel, right_wheel = self._control_circular_with_spin(angle, max_power)
+        return max(left_wheel, 0), max(right_wheel, 0)
+
+    def _control_linear(self, angle, max_power=FULL_POWER):
+        left_wheel, right_wheel = self._control_linear_with_spin(angle, max_power)
+        return max(left_wheel, 0), max(right_wheel, 0)
 
 
 
