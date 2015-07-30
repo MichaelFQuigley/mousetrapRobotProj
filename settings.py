@@ -5,7 +5,7 @@ import pickle
 bot_height = 0.323
 bot_radius = 0.35
 maze_width = 9.0
-maze_length = 11.0
+maze_length = 15.0
 
 image_height = 600
 maze = {}

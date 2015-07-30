@@ -77,23 +77,23 @@ class BTPeripheral:
                 else:
                     angle += 2.0 * pi
 
-            left_wheel, right_wheel = self._control_linear(angle, FULL_POWER)
+            left_wheel, right_wheel = self._control_atan_with_spin(angle, FULL_POWER)
 
 
             print "bearing: {} rad {} deg".format(bearing, bearing * 180 / pi)
             print "target : {} rad {} deg".format(target_bearing, target_bearing * 180 / pi)
             print "angle  : {} rad {} deg".format(angle, angle * 180 / pi)
             print "sending power left, right  ({}, {})".format(left_wheel, right_wheel)
-            self.send("{}, {}\n".format(left_wheel, right_wheel))
+            # self.send("{}, {}\n".format(left_wheel, right_wheel))
 
     @staticmethod
     def _control_atan_with_spin(angle, max_power=FULL_POWER):
         left_wheel = max_power
         right_wheel = max_power
         if angle < 0:
-            right_wheel = int(tan(-angle*ATAN1/pi) * max_power / (pi/2.0))
+            right_wheel = int((tan(1.0 + 2.0*angle*ATAN1/pi)) * max_power / (pi/2.0))
         if angle > 0:
-            left_wheel = int(tan(angle*ATAN1/pi) * max_power / (pi/2.0))
+            left_wheel = int((tan(1.0 - 2.0*angle*ATAN1/pi)) * max_power / (pi/2.0))
         return left_wheel, right_wheel
 
     @staticmethod

@@ -113,7 +113,11 @@ def overlay(*args):
 
 
 def draw_bot(position, front):
-    image = np.zeros(settings.maze['image'].shape, np.float32)
+    img = settings.maze['image']
+    if hasattr(img, 'shape'):
+        image = np.zeros(settings.maze['image'].shape, np.float32)
+    else:
+        image = np.zeros((img.width(), img.height()), np.float32)
     try:
         arrow_tip = (int(front[0]), int(front[1]))
         position = (int(position[0]), int(position[1]))

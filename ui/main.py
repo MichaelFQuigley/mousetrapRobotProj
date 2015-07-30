@@ -68,7 +68,7 @@ class MainWindow(QtGui.QMainWindow):
         initMenu.addAction(init_map)
 
         init_bot_front = QtGui.QAction(QtGui.QIcon('Init Bot Front'), 'Init Bot Front', self)
-        init_bot_front.setShortcut('Ctrl+B')
+        init_bot_front.setShortcut('Ctrl+F')
         init_bot_front.setStatusTip('Bot image initialization settings')
         init_bot_front.triggered.connect(self.show_bot_front_sliders)
         initMenu.addAction(init_bot_front)
@@ -112,6 +112,7 @@ class MainWindow(QtGui.QMainWindow):
         redbot_menu.addAction(redbot_connect_action)
 
         redbot_go_action = QtGui.QAction(QtGui.QIcon('go'), 'go', self)
+        redbot_go_action.setShortcut('Ctrl+G')
         redbot_go_action.triggered.connect(self.redbot_go)
         redbot_menu.addAction(redbot_go_action)
 
@@ -210,8 +211,8 @@ class MainWindow(QtGui.QMainWindow):
                                                         (settings.bot_position[1], settings.bot_position[0]),
                                                         (settings.goal_position[1], settings.goal_position[0]))
         settings.maze['image'] = image
-        settings.path = map(lambda x: (x[1], x[0]), points)
-        print settings.path
+        settings.rpath = map(lambda x: (x[1], x[0]), points)
+        print 'rpath: ', settings.rpath
 
     @QtCore.pyqtSlot()
     def show_map_sliders(self):
