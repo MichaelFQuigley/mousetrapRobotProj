@@ -14,6 +14,7 @@ import tracker
 import cv2
 import robotBluetooth
 import signal
+from numpy import sqrt
 
 robot = robotBluetooth.BTPeripheral()
 settings.robot = robot
@@ -42,12 +43,26 @@ class Loop(QtCore.QObject):
                     # img = cv2.cvtColor(settings.maze['image'], cv2.COLOR_GRAY2BGR)
                     processed = transform.overlay(settings.maze['image'], transform.draw_bot(position, front))
                     if settings.robo_go:
-                        robot.follow_command(position, front, settings.goal_position)
+                        if distance(settings.small_goal, settings.bot_position) < 0.5:
+                            if not settings.path_q.empty():
+                                settings.small_goal = settings.path_q.get()
+                            else:
+                                robot.victory_dance()
+                        robot.follow_command(position, front, settings.small_goal)
                 else:
                     processed = transform.raw_to_map(frame, settings.maze)
                 self.image_ready.emit(frame, processed)
         QtGui.qApp.quit()
-        
+
+
+def distance(a, b):
+    return pixels_to_feet(sqrt(a**2, b**2))
+
+
+def pixels_to_feet(pixels):
+    pixels_per_foot = settings.bot_front['image'].shape[1] / settings.maze_length
+    return pixels / pixels_per_foot
+
 
 class RobotLoop(QtCore.QObject):
     @QtCore.pyqtSlot()

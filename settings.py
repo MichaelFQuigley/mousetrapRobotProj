@@ -1,5 +1,6 @@
 """Common settings for application and testing"""
 import pickle
+from Queue import Queue
 
 # measurements in feet
 bot_height = 0.323
@@ -30,6 +31,9 @@ running = True
 
 path_finder_max_img_height = 500
 path_finder_max_img_width = 500
+
+path_q = Queue()
+
 
 for a_set in maze, bot_front, bot_back, overlay:
     a_set['ey'] = 1

@@ -11,6 +11,7 @@ from transform import as_pixmap, resize_image
 from camera_dialog import CameraDialog
 import robotBluetooth
 import pathFinder
+import Queue
 
 
 def track_bot():
@@ -211,8 +212,11 @@ class MainWindow(QtGui.QMainWindow):
                                                         (settings.bot_position[1], settings.bot_position[0]),
                                                         (settings.goal_position[1], settings.goal_position[0]))
         settings.maze['image'] = image
-        settings.rpath = map(lambda x: (x[1], x[0]), points)
-        print 'rpath: ', settings.rpath
+        for pos in points:
+            settings.path_q.put((pos[1], pos[0]))
+
+        settings.small_goal = settings.path_q.get()
+        print 'path: ', settings.path_q
 
     @QtCore.pyqtSlot()
     def show_map_sliders(self):
