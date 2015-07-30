@@ -213,4 +213,13 @@ def mark_location(img, coordinates, color):
     color_pixel(img, row + 1, col, color) 
     color_pixel(img, row, col - 1, color) 
     color_pixel(img, row, col + 1, color) 
+
     
+# This is actually post-processing, but left in here for now.
+# TODO: decide where is the best place to put it.
+def sample_path(the_map, path):
+    h, w = the_map.shape
+    step = int(w * (settings.bot_radius / 2) / settings.maze_width)
+    print("step: " + str(step))
+    return [path[i] for i in range(0, len(path), step)]
+
