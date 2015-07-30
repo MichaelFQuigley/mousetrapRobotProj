@@ -25,6 +25,7 @@ camera_height = 5.0
 camera_distance = 7.0
 
 goal_position = (200, 200)
+running = True
 
 for a_set in maze, bot_front, bot_back, overlay:
     a_set['ey'] = 1

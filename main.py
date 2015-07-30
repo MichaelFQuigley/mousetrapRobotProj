@@ -13,10 +13,12 @@ import settings
 import tracker
 import cv2
 import robotBluetooth
-
+import signal
 
 robot = robotBluetooth.BTPeripheral()
 
+def sigint_handler(*args):
+    settings.running = False
 
 class Loop(QtCore.QObject):
     image_ready = QtCore.pyqtSignal(object, object)
@@ -24,7 +26,7 @@ class Loop(QtCore.QObject):
 
     @QtCore.pyqtSlot()
     def process_camera_frames(self):
-        while True:
+        while settings.running:
             frame = cameras.read()
             if frame is None:
                 time.sleep(.25)
@@ -42,17 +44,18 @@ class Loop(QtCore.QObject):
                 else:
                     processed = transform.raw_to_map(frame, settings.maze)
                 self.image_ready.emit(frame, processed)
-
+        QtGui.qApp.quit()
+        
 
 class RobotLoop(QtCore.QObject):
     @QtCore.pyqtSlot()
     def read_command(self):
         global robot
-        while True:
+        while settings.running:
             robot.read()
 
-
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, sigint_handler)
     app = QtGui.QApplication(sys.argv)
     cameras.init()
     print cameras.detected
