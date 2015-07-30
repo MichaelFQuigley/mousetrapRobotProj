@@ -1,9 +1,10 @@
 import thread
 import serial
 from tracker import cart2pol, pol2cart
-from numpy import cos, pi
+from numpy import cos, pi, arctan, tan
 
 FULL_POWER = 150
+ATAN1 = arctan(1)
 
 class bcolors:
     HEADER = '\033[95m'
@@ -86,6 +87,16 @@ class BTPeripheral:
             self.send("{}, {}\n".format(left_wheel, right_wheel))
 
     @staticmethod
+    def _control_atan_with_spin(angle, max_power=FULL_POWER):
+        left_wheel = max_power
+        right_wheel = max_power
+        if angle < 0:
+            right_wheel = int(tan(-angle*ATAN1/pi) * max_power / (pi/2.0))
+        if angle > 0:
+            left_wheel = int(tan(angle*ATAN1/pi) * max_power / (pi/2.0))
+        return left_wheel, right_wheel
+
+    @staticmethod
     def _control_linear_with_spin(angle, max_power=FULL_POWER):
         left_wheel = max_power
         right_wheel = max_power
@@ -111,6 +122,10 @@ class BTPeripheral:
 
     def _control_linear(self, angle, max_power=FULL_POWER):
         left_wheel, right_wheel = self._control_linear_with_spin(angle, max_power)
+        return max(left_wheel, 0), max(right_wheel, 0)
+
+    def _control_atan(self, angle, max_power=FULL_POWER):
+        left_wheel, right_wheel = self._control_atan_with_spin(angle, max_power)
         return max(left_wheel, 0), max(right_wheel, 0)
 
 
