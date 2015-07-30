@@ -112,7 +112,15 @@ class MainWindow(QtGui.QMainWindow):
         redbot_go_action = QtGui.QAction(QtGui.QIcon('go'), 'go', self)
         redbot_go_action.triggered.connect(self.redbot_go)
         redbot_menu.addAction(redbot_go_action)
+
+        redbot_revolt_action = QtGui.QAction(QtGui.QIcon('clear revolt'), 'clear revolt', self)
+        redbot_revolt_action.triggered.connect(self.redbot_clear_revolt)
+        redbot_menu.addAction(redbot_revolt_action)
         menu.addMenu(redbot_menu)
+
+    @QtCore.pyqtSlot()
+    def redbot_clear_revolt(self):
+        settings.robot.send('-1, -1\n')
 
     @QtCore.pyqtSlot()
     def redbot_go(self):
