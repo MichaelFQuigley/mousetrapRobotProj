@@ -37,9 +37,6 @@ def find_path(grid, origin, dest, weights=None):
 set_type('AStar')
 
 
-def sample_path(path, step):
-    return [path[i] for i in range(0, len(path), step)]
-
 def find_path_from_image(img, origin, dest):
     """
     Find path, given a map image.
@@ -80,7 +77,7 @@ def find_path_from_image(img, origin, dest):
     start_time = time.time()
     set_type('AStar')
     path_length, robot_path = find_path(dilated_map, origin, dest, weights)
-    waypoints = sample_path(robot_path, 10)
+    waypoints = preprocessing.sample_path(dilated_map, robot_path)
     end_time = time.time()
     print("Elapsed time: " + str(end_time - start_time))
 
