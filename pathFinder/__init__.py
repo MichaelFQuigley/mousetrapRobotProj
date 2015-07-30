@@ -1,3 +1,5 @@
+from __future__ import division
+
 import time
 import cv2
 import numpy as np
@@ -43,24 +45,23 @@ def find_path_from_image(img, origin, dest):
     Find path, given a map image.
     Returns the path, and an image to display.
     """
-
-    h = len(img)
-    w = len(img[0])
-
+    h, w, c = img.shape # save original image size
+    
     # For now just downsizing to half the original size
-    print "Resizing map..."
+    print "Resizing image..."
     start_time = time.time()
-    print("size: " + str(img.shape))
-    small_img = cv2.resize(img, (w // 2, h // 2), interpolation = cv2.INTER_AREA)
-    origin = (origin[0] // 2, origin[1] // 2)
-    dest = (dest[0] // 2, dest[1] // 2)
-    print("new size: " + str(small_img.shape))
-    img = small_img
+    ratio, small_img = preprocessing.downsize_image(img)
+    origin = (int(origin[0] * ratio), int(origin[1] * ratio))   # map origin to new scale
+    dest = (int(dest[0] * ratio), int(dest[1] * ratio))         # map destination to new scale
     end_time = time.time()
     print("Elapsed time: " + str(end_time - start_time))
 
-    the_map = preprocessing.get_map_img(img)
+    print "Cleaning up map..."
+    start_time = time.time()
+    the_map = preprocessing.get_map_img(small_img)
     the_map = preprocessing.threshold_img(the_map)
+    end_time = time.time()
+    print("Elapsed time: " + str(end_time - start_time))
 
     print "Dilating map..."
     start_time = time.time()
@@ -99,11 +100,11 @@ def find_path_from_image(img, origin, dest):
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
 
-    # Map path points and display image back to original image size
+    # Map path points and display image back to original scale
     path_waypoints = []
     for wp in path_waypoints:
-        path_waypoints.append(wp[0] * 2, wp[1] * 2)
-    display_img = cv2.resize(display_img, (w * 2, h * 2), interpolation = cv2.INTER_AREA)
+        path_waypoints.append(wp[0] / ratio, wp[1] / ratio)
+    display_img = cv2.resize(display_img, (w, h), interpolation = cv2.INTER_AREA)
 
     return path_waypoints, display_img
 

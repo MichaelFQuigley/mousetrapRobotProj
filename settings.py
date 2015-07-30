@@ -26,6 +26,10 @@ camera_distance = 7.0
 
 bot_position = (100, 100)
 goal_position = (200, 200)
+running = True
+
+path_finder_max_img_height = 500
+path_finder_max_img_width = 500
 
 for a_set in maze, bot_front, bot_back, overlay:
     a_set['ey'] = 1

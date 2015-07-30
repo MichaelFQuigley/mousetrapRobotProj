@@ -1,6 +1,7 @@
 """
 Pre-processing functions for path finder.
 """
+from __future__ import division
 import os, sys
 
 # For importing settings module from parent directory
@@ -14,6 +15,24 @@ from Queue import Queue
 
 import settings
 
+def downsize_image(img):
+    """
+    Downsize to a maximum size for faster processing.
+    Returns downsize ration, and new image.
+    """
+    max_width = settings.path_finder_max_img_width
+    max_height = settings.path_finder_max_img_height
+
+    h, w, c = img.shape
+    print("size: " + str((w, h)))
+
+    ratio = min(1.0, min(max_height / h, max_width / w))
+    print("ratio: " + str(ratio))
+    
+    new_size = (int(w * ratio), int(h * ratio))
+    print("new size: " + str(new_size))
+
+    return ratio, cv2.resize(img, new_size, interpolation = cv2.INTER_AREA)    
 
 def get_map_img(img):
     """
@@ -39,8 +58,8 @@ def get_dilation_kernel(grid):
     kernel_width = settings.bot_radius * grid_width / settings.maze_width
     kernel_height = settings.bot_radius * grid_height / settings.maze_length
 
-    print "kernel width:", kernel_width
-    print "kernel height:", kernel_height
+    print("kernel width: " + str(kernel_width))
+    print("kernel height: " + str(kernel_height))
     
     return np.ones((kernel_height, kernel_width), np.uint8)
 
