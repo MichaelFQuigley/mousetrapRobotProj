@@ -21,7 +21,10 @@ class BTPeripheral:
         self.btDeviceName = btDeviceName
         self.serPort = None
         self.readTimeout = readTimeout
-        self.connect()
+        if self.connect():
+            print "Robot connected"
+        else:
+            print "Robot could not connect"
 
     # returns false on failure
     def connect(self):
@@ -57,29 +60,30 @@ class BTPeripheral:
         return resultStr
 
     def follow_command(self, location, front, target):
-        bearing = cart2pol(front[0] - location[0], -(front[1] - location[1]))[1]
-        while bearing < 0:
-            bearing += pi * 2
-        target_bearing = cart2pol(target[0] - location[0], -(target[1] - location[1]))[1]
-        while target_bearing < 0:
-            target_bearing += pi * 2
-        angle = target_bearing - bearing
-        if angle < -2.0 * pi:
-            angle += 2.0 * pi
-        if abs(angle) > pi:
-            if angle > pi:
-                angle -= 2.0 * pi
-            else:
+        if location and front:
+            bearing = cart2pol(front[0] - location[0], -(front[1] - location[1]))[1]
+            while bearing < 0:
+                bearing += pi * 2
+            target_bearing = cart2pol(target[0] - location[0], -(target[1] - location[1]))[1]
+            while target_bearing < 0:
+                target_bearing += pi * 2
+            angle = target_bearing - bearing
+            if angle < -2.0 * pi:
                 angle += 2.0 * pi
+            if abs(angle) > pi:
+                if angle > pi:
+                    angle -= 2.0 * pi
+                else:
+                    angle += 2.0 * pi
 
-        left_wheel, right_wheel = self._control_linear(angle, FULL_POWER)
+            left_wheel, right_wheel = self._control_linear(angle, FULL_POWER)
 
 
-        print "bearing: {} rad {} deg".format(bearing, bearing * 180 / pi)
-        print "target : {} rad {} deg".format(target_bearing, target_bearing * 180 / pi)
-        print "angle  : {} rad {} deg".format(angle, angle * 180 / pi)
-        print "sending power left, right  ({}, {})".format(left_wheel, right_wheel)
-        # self.send("{}, {}\n".format(left_wheel, right_wheel))
+            print "bearing: {} rad {} deg".format(bearing, bearing * 180 / pi)
+            print "target : {} rad {} deg".format(target_bearing, target_bearing * 180 / pi)
+            print "angle  : {} rad {} deg".format(angle, angle * 180 / pi)
+            print "sending power left, right  ({}, {})".format(left_wheel, right_wheel)
+            self.send("{}, {}\n".format(left_wheel, right_wheel))
 
     @staticmethod
     def _control_linear_with_spin(angle, max_power=FULL_POWER):
