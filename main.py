@@ -56,7 +56,7 @@ class Loop(QtCore.QObject):
 
 
 def distance(a, b):
-    return pixels_to_feet(sqrt(a**2, b**2))
+    return pixels_to_feet(sqrt(((a[0] - b[0])**2) + ((b[1] - a[1])**2)))
 
 
 def pixels_to_feet(pixels):

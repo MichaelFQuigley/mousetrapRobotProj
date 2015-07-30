@@ -90,17 +90,17 @@ def find_path_from_image(img, origin, dest):
     print("Elapsed time: " + str(end_time - start_time))
 
     # Show images for all steps
-    #display_image("Map", the_map)
-    #display_image("Dilation", dilated_map)
-    #display_image("Weights", weights_img)
-    #display_image("Path", display_img)
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
+    # display_image("Map", the_map)
+    # display_image("Dilation", dilated_map)
+    # display_image("Weights", weights_img)
+    # display_image("Path", display_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     # Map path points and display image back to original scale
     path_waypoints = []
-    for wp in path_waypoints:
-        path_waypoints.append(wp[0] / ratio, wp[1] / ratio)
+    for wp in waypoints:
+        path_waypoints.append((int(wp[0] / ratio), int(wp[1] / ratio)))
     display_img = cv2.resize(display_img, (w, h), interpolation = cv2.INTER_AREA)
 
     return path_waypoints, display_img

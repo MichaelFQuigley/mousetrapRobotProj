@@ -212,11 +212,11 @@ class MainWindow(QtGui.QMainWindow):
                                                         (settings.bot_position[1], settings.bot_position[0]),
                                                         (settings.goal_position[1], settings.goal_position[0]))
         settings.maze['image'] = image
+        cv2.imwrite('path_output.png', settings.maze['image'])
         for pos in points:
             settings.path_q.put((pos[1], pos[0]))
 
         settings.small_goal = settings.path_q.get()
-        print 'path: ', settings.path_q
 
     @QtCore.pyqtSlot()
     def show_map_sliders(self):
