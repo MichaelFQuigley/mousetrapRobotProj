@@ -206,10 +206,12 @@ class MainWindow(QtGui.QMainWindow):
     def set_goal_pos(self, x, y):
         print "set_goal_pos called with ({}, {})".format(x, y)
         settings.goal_position = (x, y)
-        points, image = pathFinder.find_path_from_image(settings.maze['image'],
-                                                        settings.bot_position, settings.goal_position)
+        points, image = pathFinder.find_path_from_image(settings.maze['imagearray'],
+                                                        (settings.bot_position[1], settings.bot_position[0]),
+                                                        (settings.goal_position[1], settings.goal_position[0]))
         settings.maze['image'] = image
-        settings.path = points
+        settings.path = map(lambda x: (x[1], x[0]), points)
+        print settings.path
 
     @QtCore.pyqtSlot()
     def show_map_sliders(self):

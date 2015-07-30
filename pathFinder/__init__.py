@@ -45,7 +45,7 @@ def find_path_from_image(img, origin, dest):
     Find path, given a map image.
     Returns the path, and an image to display.
     """
-    h, w, c = img.shape # save original image size
+    h, w = img.shape[:2] # save original image size
     
     # For now just downsizing to half the original size
     print "Resizing image..."

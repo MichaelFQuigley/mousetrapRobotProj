@@ -23,7 +23,7 @@ def downsize_image(img):
     max_width = settings.path_finder_max_img_width
     max_height = settings.path_finder_max_img_height
 
-    h, w, c = img.shape
+    h, w = img.shape[:2]
     print("size: " + str((w, h)))
 
     ratio = min(1.0, min(max_height / h, max_width / w))
@@ -38,8 +38,9 @@ def get_map_img(img):
     """
     Get map as a NumPy array.
     """
-    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    return np.array(img_gray)
+    if len(img.shape) > 2:
+        return np.array(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))
+    return np.array(img)
 
 def threshold_img(gray_img):
     """

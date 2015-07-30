@@ -48,7 +48,8 @@ class SlidersDialog(QtGui.QDialog):
     def on_change(self, variable, label, value):
         self.purpose[variable] = value
         label.setText(str(value))
-        self.purpose['image'] = as_pixmap(transform.raw_to_map(self.raw, self.purpose))
+        self.purpose['imagearray'] = transform.raw_to_map(self.raw, self.purpose)
+        self.purpose['image'] = as_pixmap(self.purpose['imagearray'])
         self.processed.setPixmap(self.purpose['image'])
 
     def get_image(self, raw, processed=None):
