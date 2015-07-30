@@ -10,6 +10,8 @@ import settings
 from transform import as_pixmap, resize_image
 from camera_dialog import CameraDialog
 import robotBluetooth
+import pathFinder
+
 
 def track_bot():
     settings.track_bot = not settings.track_bot
@@ -137,14 +139,14 @@ class MainWindow(QtGui.QMainWindow):
         except Exception:
             print "robot blew up"
 
-
     @QtCore.pyqtSlot()
     def load_settings(self, file_path='settings.pyb'):
         settings.load(file_path)
         bot_back_sliders = self.bot_back_sliders.findChildren(QtGui.QSlider)
         bot_front_sliders = self.bot_front_sliders.findChildren(QtGui.QSlider)
         map_sliders = self.map_sliders.findChildren(QtGui.QSlider)
-        for thing, i in {'ey': 0, 'ex': 1, 'dy': 2, 'dx': 3, 'hMin': 4, 'hMax': 5, 'sMin': 6, 'sMax': 7, 'vMin': 8, 'vMax': 9}.iteritems():
+        for thing, i in {'ey': 0, 'ex': 1, 'dy': 2, 'dx': 3, 'hMin': 4, 'hMax': 5, 'sMin': 6, 'sMax': 7, 'vMin': 8,
+                         'vMax': 9}.iteritems():
             bot_back_sliders[i].setSliderPosition(settings.bot_back[thing])
             print thing + ' ' + str(settings.bot_back[thing])
             bot_front_sliders[i].setSliderPosition(settings.bot_front[thing])
@@ -156,7 +158,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def show_camera_init(self):
         camheight, okh = QtGui.QInputDialog.getDouble(self, 'Camera', 'Enter Camera Height (in feet)')
-        camdist, okd = QtGui.QInputDialog.getDouble(self, 'Camera', 'Enter Horizontal distance from camera to maze (in feet)')
+        camdist, okd = QtGui.QInputDialog.getDouble(self, 'Camera',
+                                                    'Enter Horizontal distance from camera to maze (in feet)')
         if okh and okd:
             settings.camera_height = camheight
             settings.camera_distance = camdist
@@ -203,7 +206,10 @@ class MainWindow(QtGui.QMainWindow):
     def set_goal_pos(self, x, y):
         print "set_goal_pos called with ({}, {})".format(x, y)
         settings.goal_position = (x, y)
-#        settings.path_length, settings.robot_path = path.find_path(self.processed)
+        points, image = pathFinder.find_path_from_image(settings.maze['image'],
+                                                        settings.bot_position, settings.goal_position)
+        settings.maze['image'] = image
+        settings.path = points
 
     @QtCore.pyqtSlot()
     def show_map_sliders(self):

@@ -16,6 +16,7 @@ import robotBluetooth
 
 
 robot = robotBluetooth.BTPeripheral()
+settings.robot = robot
 
 
 class Loop(QtCore.QObject):
@@ -35,6 +36,7 @@ class Loop(QtCore.QObject):
                     settings.bot_front['image'] = transform.raw_to_map(frame, settings.bot_front, QtCore.Qt.red)
                     settings.bot_back['image'] = transform.raw_to_map(frame, settings.bot_back, QtCore.Qt.green)
                     position, front = tracker.get_bot_info()
+                    settings.bot_position = position
                     # img = cv2.cvtColor(settings.maze['image'], cv2.COLOR_GRAY2BGR)
                     processed = transform.overlay(settings.maze['image'], transform.draw_bot(position, front))
                     if settings.robo_go:
@@ -50,6 +52,10 @@ class RobotLoop(QtCore.QObject):
         global robot
         while True:
             robot.read()
+
+    @QtCore.pyqtSlot()
+    def follow_command(self, command):
+        pass
 
 
 if __name__ == '__main__':
