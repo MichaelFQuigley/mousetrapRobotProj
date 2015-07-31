@@ -3,7 +3,7 @@ import serial
 from tracker import cart2pol, pol2cart
 from numpy import cos, pi, arctan, tan
 
-FULL_POWER = 70
+FULL_POWER = 100
 ATAN1 = arctan(1)
 
 
