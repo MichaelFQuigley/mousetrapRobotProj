@@ -208,9 +208,12 @@ class MainWindow(QtGui.QMainWindow):
     def set_goal_pos(self, x, y):
         print "set_goal_pos called with ({}, {})".format(x, y)
         settings.goal_position = (x, y)
+        settings.processingPath = True
         points, image = pathFinder.find_path_from_image(settings.maze['imagearray'],
                                                         (settings.bot_position[1], settings.bot_position[0]),
                                                         (settings.goal_position[1], settings.goal_position[0]))
+        settings.processingPath = False
+        print "Done processing path"
         settings.maze['image'] = image
         cv2.imwrite('path_output.png', settings.maze['image'])
         for pos in points:

@@ -22,6 +22,7 @@ def init():
 
 def VideoCapture(ind):
     global cap
+    frame_buf_size = 5
     if ind == selected:
         return cap
 

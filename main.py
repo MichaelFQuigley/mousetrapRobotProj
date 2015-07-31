@@ -25,33 +25,41 @@ def sigint_handler(*args):
 class Loop(QtCore.QObject):
     image_ready = QtCore.pyqtSignal(object, object)
     command_ready = QtCore.pyqtSignal(object, object)
+    interval_sec  = 0.04 
+    last_time     = time.time()
 
     @QtCore.pyqtSlot()
     def process_camera_frames(self):
         while settings.running:
-            frame = cameras.read()
-            if frame is None:
-                time.sleep(.25)
-            else:
-                if settings.track_bot:
-                    if settings.maze['image'] is None:
-                        settings.maze['image'] = transform.raw_to_map(frame, settings.maze, QtCore.Qt.white)
-                    settings.bot_front['image'] = transform.raw_to_map(frame, settings.bot_front, QtCore.Qt.red)
-                    settings.bot_back['image'] = transform.raw_to_map(frame, settings.bot_back, QtCore.Qt.green)
-                    position, front = tracker.get_bot_info()
-                    settings.bot_position = position
-                    # img = cv2.cvtColor(settings.maze['image'], cv2.COLOR_GRAY2BGR)
-                    processed = transform.overlay(settings.maze['image'], transform.draw_bot(position, front))
-                    if settings.robo_go:
-                        if distance(settings.small_goal, settings.bot_position) < 0.5:
-                            if not settings.path_q.empty():
-                                settings.small_goal = settings.path_q.get()
-                            else:
-                                robot.victory_dance()
-                        robot.follow_command(position, front, settings.small_goal)
+            if not settings.processingPath:
+                frame = cameras.read()
+                if frame is None:
+                    time.sleep(.25)
                 else:
-                    processed = transform.raw_to_map(frame, settings.maze)
-                self.image_ready.emit(frame, processed)
+                    if settings.track_bot:
+                        if settings.maze['image'] is None:
+                            settings.maze['image'] = transform.raw_to_map(frame, settings.maze, QtCore.Qt.white)
+                        settings.bot_front['image'] = transform.raw_to_map(frame, settings.bot_front, QtCore.Qt.red)
+                        settings.bot_back['image'] = transform.raw_to_map(frame, settings.bot_back, QtCore.Qt.green)
+                        position, front = tracker.get_bot_info()
+                        settings.bot_position = position
+                        # img = cv2.cvtColor(settings.maze['image'], cv2.COLOR_GRAY2BGR)
+                        processed = transform.overlay(settings.maze['image'], transform.draw_bot(position, front))
+                        current_time = time.time()
+                        if settings.robo_go and abs(current_time - self.last_time) >= self.interval_sec:
+                            dist_thresh = 0.3
+                            if distance(settings.small_goal, settings.bot_position) < dist_thresh:
+                                if not settings.path_q.empty():
+                                    settings.small_goal = settings.path_q.get()
+                                    print "small goal: " + str(settings.small_goal)
+                                    print "position: " + str(position)
+                                else:
+                                    settings.robo_go = False
+                                    robot.victory_dance()
+                            robot.follow_command(position, front, settings.small_goal)
+                    else:
+                        processed = transform.raw_to_map(frame, settings.maze)
+                    self.image_ready.emit(frame, processed)
         QtGui.qApp.quit()
 
 
