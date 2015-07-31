@@ -24,8 +24,8 @@ overlay = {}
 
 track_bot = False
 robo_go = False
-camera_height = 5.0
-camera_distance = 7.0
+camera_height = 9.0
+camera_distance = 6.0
 
 bot_position = (100, 100)
 goal_position = (200, 200)

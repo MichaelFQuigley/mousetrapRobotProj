@@ -6,6 +6,7 @@ from numpy import cos, pi, arctan, tan
 FULL_POWER = 70
 ATAN1 = arctan(1)
 
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -79,17 +80,32 @@ class BTPeripheral:
 
             left_wheel, right_wheel = self._control_pivot(angle, FULL_POWER)
 
-
             print "bearing: {} rad {} deg".format(bearing, bearing * 180 / pi)
             print "target : {} rad {} deg".format(target_bearing, target_bearing * 180 / pi)
             print "angle  : {} rad {} deg".format(angle, angle * 180 / pi)
             print "sending power left, right  ({}, {})".format(left_wheel, right_wheel)
-            self.send("{}, {}\n".format(left_wheel, right_wheel))
+            # self.send("{}, {}\n".format(left_wheel, right_wheel))
+
+    def _control_power_over_circle(self, angle, max_power=FULL_POWER):
+        threshold_rad = pi / 2.0
+        if abs(angle) > threshold_rad:
+            return self._control_circular_with_spin(angle, max_power * 0.75)
+        else:
+            return self._control_power(angle, max_power)
+
+    def _control_power(self, angle, max_power=FULL_POWER):
+        left_wheel = max_power
+        right_wheel = max_power
+        if angle < 0:
+            right_wheel = int(((pi / 2.0 + angle) ** 3) * max_power / (pi / 2.0))
+        if angle > 0:
+            left_wheel = int(((pi / 2.0 - angle) ** 3) * max_power / (pi / 2.0))
+        return left_wheel, right_wheel
 
     @staticmethod
     def _control_pivot(angle, max_power=FULL_POWER):
         threshold_rad = pi / 16.0
-        left_wheel  = max_power
+        left_wheel = max_power
         right_wheel = max_power
         if angle > threshold_rad:
             left_wheel = -max_power
@@ -102,9 +118,9 @@ class BTPeripheral:
         left_wheel = max_power
         right_wheel = max_power
         if angle < 0:
-            right_wheel = int((tan((1.0 + 2.0*angle*ATAN1/pi)**3)) * max_power / (pi/2.0))
+            right_wheel = int((tan((1.0 + 2.0 * angle * ATAN1 / pi) ** 3)) * max_power / (pi / 2.0))
         if angle > 0:
-            left_wheel = int((tan((1.0 - 2.0*angle*ATAN1/pi)**3)) * max_power / (pi/2.0))
+            left_wheel = int((tan((1.0 - 2.0 * angle * ATAN1 / pi) ** 3)) * max_power / (pi / 2.0))
         return left_wheel, right_wheel
 
     @staticmethod
@@ -112,9 +128,9 @@ class BTPeripheral:
         left_wheel = max_power
         right_wheel = max_power
         if angle < 0:
-            right_wheel = int((pi/2.0 + angle) * max_power / (pi/2.0))
+            right_wheel = int((pi / 2.0 + angle) * max_power / (pi / 2.0))
         if angle > 0:
-            left_wheel = int((pi/2.0 - angle) * max_power / (pi/2.0))
+            left_wheel = int((pi / 2.0 - angle) * max_power / (pi / 2.0))
         return left_wheel, right_wheel
 
     @staticmethod
@@ -138,7 +154,6 @@ class BTPeripheral:
     def _control_atan(self, angle, max_power=FULL_POWER):
         left_wheel, right_wheel = self._control_atan_with_spin(angle, max_power)
         return max(left_wheel, 0), max(right_wheel, 0)
-
 
     def victory_dance(self):
         self.send(str(FULL_POWER) + "," + str(-FULL_POWER) + "\n")

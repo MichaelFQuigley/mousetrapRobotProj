@@ -84,7 +84,7 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     cameras.init()
     print cameras.detected
-    if cameras.detected > 0:
+    if cameras.detected > 0 and False:
         cameras.VideoCapture(cameras.detected - 1)
     else:
         cameras.VideoCapture(path.join('img', 'mousetraps.jpg'))
