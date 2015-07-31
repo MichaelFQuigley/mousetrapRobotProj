@@ -2,7 +2,7 @@ from PyQt4 import QtGui
 import numpy as np
 import cv2
 import settings
-RATIO_HEIGHT_WIDTH = 1.5
+RATIO_HEIGHT_WIDTH = 12.5 / 7.5
 
 
 def four_point_transform(image, pts):

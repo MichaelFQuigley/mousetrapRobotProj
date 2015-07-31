@@ -47,7 +47,7 @@ class Loop(QtCore.QObject):
                         processed = transform.overlay(settings.maze['image'], transform.draw_bot(position, front))
                         current_time = time.time()
                         if settings.robo_go and abs(current_time - self.last_time) >= self.interval_sec:
-                            dist_thresh = 0.3
+                            dist_thresh = 0.4
                             if distance(settings.small_goal, settings.bot_position) < dist_thresh:
                                 if not settings.path_q.empty():
                                     settings.small_goal = settings.path_q.get()

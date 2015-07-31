@@ -4,9 +4,9 @@ from Queue import Queue
 
 # measurements in feet
 bot_height = 0.36
-bot_radius = 0.38
-maze_width = 10.0
-maze_length = 15.0
+bot_radius = 0.42
+maze_width = 7.5
+maze_length = 12.5
 
 processingPath = False
 
@@ -31,8 +31,8 @@ bot_position = (100, 100)
 goal_position = (200, 200)
 running = True
 
-path_finder_max_img_height = 500
-path_finder_max_img_width = 500
+path_finder_max_img_height = 400
+path_finder_max_img_width = 400
 
 path_q = Queue()
 
@@ -109,6 +109,7 @@ def load(path='settings.txt'):
     bottom_left = pickle.load(input)
     camera_height = pickle.load(input)
     camera_distance = pickle.load(input)
+
     for purpose in maze, bot_front, bot_back, overlay:
         purpose['ey'] = pickle.load(input)
         purpose['ex'] = pickle.load(input)

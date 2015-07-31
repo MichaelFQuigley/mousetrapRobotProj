@@ -3,7 +3,7 @@ import serial
 from tracker import cart2pol, pol2cart
 from numpy import cos, pi, arctan, tan
 
-FULL_POWER = 120
+FULL_POWER = 70
 ATAN1 = arctan(1)
 
 
@@ -84,9 +84,10 @@ class BTPeripheral:
             print "target : {} rad {} deg".format(target_bearing, target_bearing * 180 / pi)
             print "angle  : {} rad {} deg".format(angle, angle * 180 / pi)
             print "sending power left, right  ({}, {})".format(left_wheel, right_wheel)
-            # self.send("{}, {}\n".format(left_wheel, right_wheel))
+            self.send("{}, {}\n".format(left_wheel, right_wheel))
 
     def _control_power_over_circle(self, angle, max_power=FULL_POWER):
+        power = max_power
         threshold_rad = pi / 2.0
         if abs(angle) > threshold_rad / 2.0:
             power = max_power * 0.65
@@ -96,6 +97,7 @@ class BTPeripheral:
             return self._control_power(angle, power)
 
     def _control_power_over_linear(self, angle, max_power=FULL_POWER):
+        power = max_power
         threshold_rad = pi / 2.0
         if abs(angle) > threshold_rad / 2.0:
             power = max_power * 0.65
@@ -105,6 +107,7 @@ class BTPeripheral:
             return self._control_power_over_circle(angle, power)
 
     def _control_power_over_pivot(self, angle, max_power=FULL_POWER):
+        power = max_power
         threshold_rad = pi / 2.0
         if abs(angle) > threshold_rad / 2.0:
             power = max_power * 0.65
@@ -126,7 +129,7 @@ class BTPeripheral:
 
     @staticmethod
     def _control_pivot(angle, max_power=FULL_POWER):
-        threshold_rad = pi / 16.0
+        threshold_rad = pi / 14.0
         left_wheel = max_power
         right_wheel = max_power
         if angle > threshold_rad:

@@ -219,7 +219,7 @@ def mark_location(img, coordinates, color):
 # TODO: decide where is the best place to put it.
 def sample_path(the_map, path):
     h, w = the_map.shape
-    step = int(w * (settings.bot_radius / 2) / settings.maze_width)
+    step = int(w * (settings.bot_radius * 0.75) / settings.maze_width)
     print("step: " + str(step))
     return [path[i] for i in range(0, len(path), step)]
 
