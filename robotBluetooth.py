@@ -3,7 +3,7 @@ import serial
 from tracker import cart2pol, pol2cart
 from numpy import cos, pi, arctan, tan
 
-FULL_POWER = 100
+FULL_POWER = 120
 ATAN1 = arctan(1)
 
 
@@ -89,7 +89,7 @@ class BTPeripheral:
     def _control_power_over_circle(self, angle, max_power=FULL_POWER):
         threshold_rad = pi / 2.0
         if abs(angle) > threshold_rad / 2.0:
-            power = max_power * 0.75
+            power = max_power * 0.65
         if abs(angle) > threshold_rad:
             return self._control_circular_with_spin(angle, power)
         else:
@@ -98,7 +98,7 @@ class BTPeripheral:
     def _control_power_over_linear(self, angle, max_power=FULL_POWER):
         threshold_rad = pi / 2.0
         if abs(angle) > threshold_rad / 2.0:
-            power = max_power * 0.75
+            power = max_power * 0.65
         if abs(angle) > threshold_rad / 2.0:
             return self._control_linear_with_spin(angle, power)
         else:
@@ -107,7 +107,7 @@ class BTPeripheral:
     def _control_power_over_pivot(self, angle, max_power=FULL_POWER):
         threshold_rad = pi / 2.0
         if abs(angle) > threshold_rad / 2.0:
-            power = max_power * 0.75
+            power = max_power * 0.65
         if abs(angle) > threshold_rad / 2.0:
             return self._control_pivot(angle, power)
         else:
