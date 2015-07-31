@@ -88,12 +88,34 @@ class BTPeripheral:
 
     def _control_power_over_circle(self, angle, max_power=FULL_POWER):
         threshold_rad = pi / 2.0
+        if abs(angle) > threshold_rad / 2.0:
+            power = max_power * 0.75
         if abs(angle) > threshold_rad:
-            return self._control_circular_with_spin(angle, max_power * 0.75)
+            return self._control_circular_with_spin(angle, power)
         else:
-            return self._control_power(angle, max_power)
+            return self._control_power(angle, power)
 
-    def _control_power(self, angle, max_power=FULL_POWER):
+    def _control_power_over_linear(self, angle, max_power=FULL_POWER):
+        threshold_rad = pi / 2.0
+        if abs(angle) > threshold_rad / 2.0:
+            power = max_power * 0.75
+        if abs(angle) > threshold_rad / 2.0:
+            return self._control_linear_with_spin(angle, power)
+        else:
+            return self._control_power_over_circle(angle, power)
+
+    def _control_power_over_pivot(self, angle, max_power=FULL_POWER):
+        threshold_rad = pi / 2.0
+        if abs(angle) > threshold_rad / 2.0:
+            power = max_power * 0.75
+        if abs(angle) > threshold_rad / 2.0:
+            return self._control_pivot(angle, power)
+        else:
+            return self._control_power_over_circle(angle, power)
+
+
+    @staticmethod
+    def _control_power(angle, max_power=FULL_POWER):
         left_wheel = max_power
         right_wheel = max_power
         if angle < 0:
@@ -113,15 +135,16 @@ class BTPeripheral:
             right_wheel = -max_power
         return left_wheel, right_wheel
 
-    @staticmethod
-    def _control_atan_with_spin(angle, max_power=FULL_POWER):
-        left_wheel = max_power
-        right_wheel = max_power
-        if angle < 0:
-            right_wheel = int((tan((1.0 + 2.0 * angle * ATAN1 / pi) ** 3)) * max_power / (pi / 2.0))
-        if angle > 0:
-            left_wheel = int((tan((1.0 - 2.0 * angle * ATAN1 / pi) ** 3)) * max_power / (pi / 2.0))
-        return left_wheel, right_wheel
+    # logic is wrong
+    # @staticmethod
+    # def _control_atan_with_spin(angle, max_power=FULL_POWER):
+    #     left_wheel = max_power
+    #     right_wheel = max_power
+    #     if angle < 0:
+    #         right_wheel = int((tan((1.0 + 2.0 * angle * ATAN1 / pi) ** 3)) * max_power / (pi / 2.0))
+    #     if angle > 0:
+    #         left_wheel = int((tan((1.0 - 2.0 * angle * ATAN1 / pi) ** 3)) * max_power / (pi / 2.0))
+    #     return left_wheel, right_wheel
 
     @staticmethod
     def _control_linear_with_spin(angle, max_power=FULL_POWER):
@@ -151,9 +174,9 @@ class BTPeripheral:
         left_wheel, right_wheel = self._control_linear_with_spin(angle, max_power)
         return max(left_wheel, 0), max(right_wheel, 0)
 
-    def _control_atan(self, angle, max_power=FULL_POWER):
-        left_wheel, right_wheel = self._control_atan_with_spin(angle, max_power)
-        return max(left_wheel, 0), max(right_wheel, 0)
+    # def _control_atan(self, angle, max_power=FULL_POWER):
+    #     left_wheel, right_wheel = self._control_atan_with_spin(angle, max_power)
+    #     return max(left_wheel, 0), max(right_wheel, 0)
 
     def victory_dance(self):
         self.send(str(FULL_POWER) + "," + str(-FULL_POWER) + "\n")
